@@ -1,6 +1,7 @@
+#!/usr/bin/env python3
 # Software License Agreement (BSD)
 #
-# @author    Hilary Luo <hluo@clearpathrobotics.com>
+# @author    Chris Iverach-Brereton <civerachb@clearpathrobotics.com>
 # @copyright (c) 2024, Clearpath Robotics, Inc., All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -26,41 +27,53 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-class Discovery:
-    SIMPLE = 'simple'
-    SERVER = 'server'
 
-    # All supported discovery modes, currently only set up for FastDDS
-    ALL_SUPPORTED = [SIMPLE, SERVER]
+class UnsupportedAccessoryException(AssertionError):
+    """
+    Indicates that an accessory is not supported in the current release.
 
-    # The discovery mode that the system will default to
-    DEFAULT = SIMPLE
+    The accessory may become available in the future.
+    """
 
-    def __init__(
-            self,
-            mode: str = DEFAULT
-            ) -> None:
-        self.assert_valid(mode)
-        self.mode = mode
+    def __init__(self, message):
+        """
+        Create a new exception.
 
-    def __eq__(self, other: object) -> bool:
-        if isinstance(other, str):
-            return self.mode == other
-        elif isinstance(other, Discovery):
-            return self.mode == other.mode
-        else:
-            return False
+        @param message  A message indicating why this accessory is not supported
+        """
+        super().__init__(message)
 
-    def __str__(self) -> str:
-        return self.mode
 
-    @classmethod
-    def is_valid(cls, mode: str) -> bool:
-        return mode in cls.ALL_SUPPORTED
+class UnsupportedPlatformException(AssertionError):
+    """
+    Indicates that a platform is not supported in the current release.
 
-    @classmethod
-    def assert_valid(cls, mode: str) -> None:
-        assert cls.is_valid(mode), ('\n'.join([
-            f'Discovery mode "{mode}" not supported.'
-            f'Discovery mode must be one of: "{cls.ALL_SUPPORTED}"'
-        ]))
+    The platform may become available in the future.
+    """
+
+    def __init__(self, message):
+        """
+        Create a new exception.
+
+        @param message  A message indicating why this platform is not supported
+        """
+        super().__init__(message)
+
+
+class UnsupportedMiddlewareException(AssertionError):
+    """
+    Indicates that the requested middleware is not supported.
+
+    This could be because the platform does not support the middleware in question,
+    or support for that middleware is not available in this ROS release.
+
+    Support may or may not be available in the future.
+    """
+
+    def __init__(self, message):
+        """
+        Create a new exception.
+
+        @param message  A message indicating why this middleware is not supported
+        """
+        super().__init__(message)

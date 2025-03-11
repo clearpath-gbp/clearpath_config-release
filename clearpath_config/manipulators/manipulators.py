@@ -35,8 +35,8 @@ from clearpath_config.manipulators.types.arms import (
     BaseArm,
 )
 from clearpath_config.manipulators.types.lifts import (
+    BaseLift,
     Lift,
-    BaseLift
 )
 from clearpath_config.manipulators.types.manipulator import BaseManipulator
 
@@ -54,9 +54,9 @@ class ManipulatorListConfig(OrderedListConfig[BaseManipulator]):
 
 
 class ManipulatorConfig(BaseConfig):
-    MANIPULATORS = "manipulators"
-    ARMS = "arms"
-    LIFTS = "lifts"
+    MANIPULATORS = 'manipulators'
+    ARMS = 'arms'
+    LIFTS = 'lifts'
     TEMPLATE = {
         MANIPULATORS: {
             ARMS: ARMS,
@@ -94,10 +94,8 @@ class ManipulatorConfig(BaseConfig):
 
     @arms.setter
     def arms(self, value: List[dict]) -> None:
-        assert isinstance(value, list), (
-            "Manipulators must be list of 'dict'")
-        assert all([isinstance(i, dict) for i in value]), (
-            "Manipulators must be list of 'dict'")
+        assert isinstance(value, list), 'Manipulators must be of type "dict"'
+        assert all([isinstance(i, dict) for i in value]), 'Manipulators must be of type "dict"'  # noqa:C419, E501
         arms_list = []
         for d in value:
             arm = Arm(d['model'])
@@ -117,7 +115,7 @@ class ManipulatorConfig(BaseConfig):
     def lifts(self, value: List[dict]) -> None:
         assert isinstance(value, list), (
             "Manipulators must be list of 'dict'")
-        assert all([isinstance(i, dict) for i in value]), (
+        assert all(isinstance(i, dict) for i in value), (
             "Manipulators must be list of 'dict'")
         lifts_list = []
         for d in value:
