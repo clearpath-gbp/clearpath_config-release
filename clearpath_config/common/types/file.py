@@ -31,7 +31,6 @@ import os
 # File
 # - file class
 class File:
-
     def __init__(self, path: str, creatable=False, exists=False, make_abs=True) -> None:
         if creatable:
             assert File.is_creatable(path)
@@ -53,7 +52,7 @@ class File:
     @staticmethod
     def clean(path: str, make_abs=True) -> str:
         if not path:
-            return ''
+            return ""
         path = os.path.expanduser(path)
         path = os.path.normpath(path)
         if make_abs:

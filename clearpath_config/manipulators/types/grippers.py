@@ -29,28 +29,46 @@ from clearpath_config.manipulators.types.manipulator import BaseManipulator
 
 
 class BaseGripper(BaseManipulator):
-    MANIPULATOR_MODEL = 'base'
-    MANIPULATOR_TYPE = 'gripper'
+    MANIPULATOR_MODEL = "base"
+    MANIPULATOR_TYPE = "gripper"
+
+
+class FrankaGripper(BaseGripper):
+    MANIPULATOR_MODEL = 'franka_gripper'
+    JOINT_COUNT = 1
+
+    @property
+    def arm_id(self) -> str:
+        return self._arm_id
+
+    @arm_id.setter
+    def arm_id(self, value: str) -> None:
+        self._arm_id = value
 
 
 class Kinova2FLite(BaseGripper):
-    MANIPULATOR_MODEL = 'kinova_2f_lite'
+    MANIPULATOR_MODEL = "kinova_2f_lite"
+    JOINT_COUNT = 1
 
 
 class Robotiq2F85(BaseGripper):
-    MANIPULATOR_MODEL = 'robotiq_2f_85'
+    MANIPULATOR_MODEL = "robotiq_2f_85"
+    JOINT_COUNT = 1
 
 
 class Robotiq2F140(BaseGripper):
-    MANIPULATOR_MODEL = 'robotiq_2f_140'
+    MANIPULATOR_MODEL = "robotiq_2f_140"
+    JOINT_COUNT = 1
 
 
 class Gripper():
+    FRANKA_GRIPPER = FrankaGripper.MANIPULATOR_MODEL
     KINOVA_2F_LITE = Kinova2FLite.MANIPULATOR_MODEL
     ROBOTIQ_2F_140 = Robotiq2F140.MANIPULATOR_MODEL
     ROBOTIQ_2F_85 = Robotiq2F85.MANIPULATOR_MODEL
 
     MODEL = {
+        FRANKA_GRIPPER: FrankaGripper,
         KINOVA_2F_LITE: Kinova2FLite,
         ROBOTIQ_2F_140: Robotiq2F140,
         ROBOTIQ_2F_85: Robotiq2F85,
@@ -58,7 +76,12 @@ class Gripper():
 
     @classmethod
     def assert_model(cls, model: str) -> None:
-        assert model in cls.MODEL, f'Gripper model "{model}" must be one of "{cls.MODEL.keys()}"'
+        assert model in cls.MODEL, (
+            "Gripper model '%s' must be one of: '%s'" % (
+                model,
+                cls.MODEL.keys()
+            )
+        )
 
     def __new__(cls, model: str) -> BaseGripper:
         cls.assert_model(model)

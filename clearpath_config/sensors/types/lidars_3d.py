@@ -25,39 +25,38 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-from typing import List
-
 from clearpath_config.common.types.accessory import Accessory
 from clearpath_config.common.types.ip import IP
 from clearpath_config.common.types.port import Port
 from clearpath_config.common.utils.dictionary import extend_flat_dict, is_in_dict
 from clearpath_config.sensors.types.sensor import BaseSensor
+from typing import List
 
 
 class BaseLidar3D(BaseSensor):
-    SENSOR_TYPE = 'lidar3d'
-    SENSOR_MODEL = 'base'
-    TOPIC = 'points'
+    SENSOR_TYPE = "lidar3d"
+    SENSOR_MODEL = "base"
+    TOPIC = "points"
 
-    FRAME_ID = 'laser'
-    IP_ADDRESS = '192.168.131.25'
-    IP_PORT = '2368'
+    FRAME_ID = "laser"
+    IP_ADDRESS = "192.168.131.25"
+    IP_PORT = "2368"
 
     class ROS_PARAMETER_KEYS:
-        FRAME_ID = 'node_name.frame_id'
-        IP_ADDRESS = 'node_name.ip_address'
-        IP_PORT = 'node_name.ip_port'
+        FRAME_ID = "node_name.frame_id"
+        IP_ADDRESS = "node_name.ip_address"
+        IP_PORT = "node_name.ip_port"
 
     class TOPICS:
-        SCAN = 'scan'
-        POINTS = 'points'
+        SCAN = "scan"
+        POINTS = "points"
         NAME = {
-            SCAN: 'scan',
-            POINTS: 'points',
+            SCAN: "scan",
+            POINTS: "points",
         }
-        TYPE = {
-            SCAN: 'sensor_msgs/msg/LaserScan',
-            POINTS: 'sensor_msgs/msg/PointCloud2',
+        RATE = {
+            SCAN: 10,
+            POINTS: 10
         }
 
     def __init__(
@@ -77,11 +76,14 @@ class BaseLidar3D(BaseSensor):
             rpy: List[float] = Accessory.RPY
             ) -> None:
         # Frame ID
-        self.frame_id = frame_id
+        self.frame_id: str = self.FRAME_ID
+        self.set_frame_id(frame_id)
         # IP Address
-        self.ip = ip
+        self.ip: IP = IP(self.IP_ADDRESS)
+        self.set_ip(ip)
         # IP Port
-        self.port = port
+        self.port: Port = Port(self.IP_PORT)
+        self.set_port(port)
         # ROS Parameter Template
         template = {
             self.ROS_PARAMETER_KEYS.FRAME_ID: BaseLidar3D.frame_id,
@@ -101,15 +103,10 @@ class BaseLidar3D(BaseSensor):
             xyz,
             rpy
         )
-        self.rates = {
-            # TODO: Be able to configure the expected update rate using the robot.yaml
-            BaseLidar3D.TOPICS.SCAN: 20,
-            BaseLidar3D.TOPICS.POINTS: 20
-        }
 
     @classmethod
     def get_frame_id_from_idx(cls, idx: int) -> str:
-        return '%s_%s' % (
+        return "%s_%s" % (
             cls.get_name_from_idx(idx),
             cls.FRAME_ID
         )
@@ -125,12 +122,12 @@ class BaseLidar3D(BaseSensor):
         # Set Base: Name and Topic
         super().set_idx(idx)
         # Set Frame ID
-        self.frame_id = self.get_frame_id_from_idx(idx)
+        self.set_frame_id(self.get_frame_id_from_idx(idx))
         # Set IP
         if not is_in_dict(
                 self._ros_parameters,
-                self.ROS_PARAMETER_KEYS.IP_ADDRESS.split('.')):
-            self.ip = self.get_ip_from_idx(idx)
+                self.ROS_PARAMETER_KEYS.IP_ADDRESS.split(".")):
+            self.set_ip(self.get_ip_from_idx(idx))
 
     @property
     def frame_id(self) -> str:
@@ -141,6 +138,12 @@ class BaseLidar3D(BaseSensor):
         Accessory.assert_valid_link(link)
         self._frame_id = link
 
+    def get_frame_id(self) -> str:
+        return self.frame_id
+
+    def set_frame_id(self, link: str) -> None:
+        self.frame_id = link
+
     @property
     def ip(self) -> str:
         return str(self._ip)
@@ -148,6 +151,12 @@ class BaseLidar3D(BaseSensor):
     @ip.setter
     def ip(self, ip: str) -> None:
         self._ip = IP(str(ip))
+
+    def get_ip(self) -> str:
+        return str(self.ip)
+
+    def set_ip(self, ip: str) -> None:
+        self.ip = ip
 
     @property
     def port(self) -> int:
@@ -157,37 +166,55 @@ class BaseLidar3D(BaseSensor):
     def port(self, port: int) -> None:
         self._port = Port(int(port))
 
+    def get_port(self) -> int:
+        return int(self.port)
+
+    def set_port(self, port: int) -> None:
+        self.port = port
+
 
 class VelodyneLidar(BaseLidar3D):
-    SENSOR_MODEL = 'velodyne_lidar'
+    SENSOR_MODEL = "velodyne_lidar"
 
-    FRAME_ID = 'laser'
+    FRAME_ID = "laser"
     IP_PORT = 2368
 
-    HDL_32E = '32E'
-    HDL_64E = '64E'
-    HDL_64E_S2 = '64E_S2'
-    HDL_64E_S3 = '64E_S3'
-    VLP_16 = 'VLP16'
-    VLP_32C = '32C'
+    HDL_32E = "32E"
+    HDL_64E = "64E"
+    HDL_64E_S2 = "64E_S2"
+    HDL_64E_S3 = "64E_S3"
+    VLP_16 = "VLP16"
+    VLP_32C = "32C"
     DEVICE_TYPE = VLP_16
-    DEVICE_TYPES = (
+    DEVICE_TYPES = [
         HDL_32E,
         HDL_64E,
         HDL_64E_S2,
         HDL_64E_S3,
         VLP_16,
         VLP_32C
-    )
+    ]
 
     class ROS_PARAMETER_KEYS:
-        FRAME_ID = 'velodyne_driver_node.frame_id'
-        IP_ADDRESS = 'velodyne_driver_node.device_ip'
-        IP_PORT = 'velodyne_driver_node.port'
-        DRIVER_NODE_MODEL = 'velodyne_driver_node.model'
-        TRANSFORM_NODE_MODEL = 'velodyne_transform_node.model'
-        FIXED_FRAME = 'velodyne_transform_node.fixed_frame'
-        TARGET_FRAME = 'velodyne_transform_node.target_frame'
+        FRAME_ID = "velodyne_driver_node.frame_id"
+        IP_ADDRESS = "velodyne_driver_node.device_ip"
+        IP_PORT = "velodyne_driver_node.port"
+        DRIVER_NODE_MODEL = "velodyne_driver_node.model"
+        TRANSFORM_NODE_MODEL = "velodyne_transform_node.model"
+        FIXED_FRAME = "velodyne_transform_node.fixed_frame"
+        TARGET_FRAME = "velodyne_transform_node.target_frame"
+
+    class TOPICS:
+        SCAN = "scan"
+        POINTS = "points"
+        NAME = {
+            SCAN: "scan",
+            POINTS: "points",
+        }
+        RATE = {
+            SCAN: 10,
+            POINTS: 10
+        }
 
     def __init__(
             self,
@@ -206,7 +233,7 @@ class VelodyneLidar(BaseLidar3D):
             rpy: List[float] = Accessory.RPY
             ) -> None:
         # Device Type:
-        self.device_type = device_type
+        self.set_device_type(device_type)
         # ROS Parameter Template
         ros_parameters_template = {
             self.ROS_PARAMETER_KEYS.DRIVER_NODE_MODEL: VelodyneLidar.device_type,
@@ -237,12 +264,18 @@ class VelodyneLidar(BaseLidar3D):
     @device_type.setter
     def device_type(self, device_type) -> None:
         assert device_type in self.DEVICE_TYPES, (
-            'Device type "%s" is not one of "%s"' % (
+            "Device type '%s' is not one of '%s'" % (
                 device_type,
                 self.DEVICE_TYPES
             )
         )
         self._device_type = device_type
+
+    def get_device_type(self) -> str:
+        return self.device_type
+
+    def set_device_type(self, device_type: str) -> None:
+        self.device_type = device_type
 
 
 class OusterOS1(BaseLidar3D):
@@ -307,78 +340,3 @@ class OusterOS1(BaseLidar3D):
     @computer_ip.setter
     def computer_ip(self, ip: str) -> None:
         self._computer_ip = IP(str(ip))
-
-
-class SeyondLidar(BaseLidar3D):
-    """
-    The Seyond Robin W.
-
-    At present this lidar us URDF-only; launch files are handled by OutdoorNav
-    """
-
-    SENSOR_MODEL = 'seyond_lidar'
-
-    FRAME_ID = 'seyond'
-    IP_PORT = 0  # not used at present
-
-    ROBIN_W = 'robin_w'
-    DEVICE_TYPE = ROBIN_W
-    DEVICE_TYPES = (
-        ROBIN_W
-    )
-
-    class ROS_PARAMETER_KEYS:
-        FRAME_ID = 'seyond_driver.frame_id'
-        IP_ADDRESS = 'seyond_driver.device_ip'
-        IP_PORT = 'seyond_driver.port'
-
-    def __init__(
-            self,
-            idx: int = None,
-            name: str = None,
-            topic: str = BaseLidar3D.TOPIC,
-            frame_id: str = FRAME_ID,
-            ip: str = BaseLidar3D.IP_ADDRESS,  # not used
-            port: int = IP_PORT,  # not used
-            device_type: str = DEVICE_TYPE,
-            urdf_enabled: bool = BaseSensor.URDF_ENABLED,
-            launch_enabled: bool = False,  # URDF-only for now
-            ros_parameters: str = BaseSensor.ROS_PARAMETERS,
-            parent: str = Accessory.PARENT,
-            xyz: List[float] = Accessory.XYZ,
-            rpy: List[float] = Accessory.RPY
-            ) -> None:
-        # Device Type:
-        self.device_type = device_type
-        # ROS Parameter Template
-        ros_parameters_template = {
-            self.ROS_PARAMETER_KEYS.FRAME_ID: SeyondLidar.frame_id,
-            self.ROS_PARAMETER_KEYS.IP_ADDRESS: SeyondLidar.ip,
-            self.ROS_PARAMETER_KEYS.IP_PORT: SeyondLidar.port,
-        }
-        super().__init__(
-            idx,
-            name,
-            topic,
-            frame_id,
-            ip,
-            port,
-            urdf_enabled,
-            launch_enabled,
-            ros_parameters,
-            ros_parameters_template,
-            parent,
-            xyz,
-            rpy
-        )
-
-    @property
-    def device_type(self) -> str:
-        return self._device_type
-
-    @device_type.setter
-    def device_type(self, device_type: str) -> None:
-        assert device_type in self.DEVICE_TYPES, (
-            f'Device type "{device_type}" is not one of "{self.DEVICE_TYPES}"'
-        )
-        self._device_type = device_type
