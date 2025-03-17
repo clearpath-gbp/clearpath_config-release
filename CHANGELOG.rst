@@ -2,6 +2,11 @@
 Changelog for package clearpath_config
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.2.1 (2025-03-17)
+------------------
+* Added battery to A300 samples.
+* Contributors: Tony Baltovski
+
 2.2.0 (2025-03-11)
 ------------------
 * Feature Jazzy Ouster (`#132 <https://github.com/clearpathrobotics/clearpath_config/issues/132>`_)
