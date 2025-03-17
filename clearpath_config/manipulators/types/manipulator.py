@@ -33,73 +33,18 @@ from clearpath_config.common.types.accessory import Accessory, IndexedAccessory
 from clearpath_config.common.utils.dictionary import flatten_dict, unflatten_dict
 
 
-class ManipulatorPose():
-
-    def __init__(
-            self,
-            joint_count,
-            name: str = None,
-            joints: List = None,
-            ) -> None:
-        self.joint_count = joint_count
-        if name:
-            self.name = name
-        else:
-            self._name = ''
-        if joints:
-            self.joints = joints
-        else:
-            self._joints = []
-
-    @property
-    def name(self) -> str:
-        return self._name
-
-    @name.setter
-    def name(self, name: str) -> None:
-        assert isinstance(name, str), (
-            "Manipulator pose name must be of type str")
-        self._name = name
-
-    @property
-    def joints(self) -> list:
-        return self._joints
-
-    @joints.setter
-    def joints(self, joints: List) -> None:
-        assert isinstance(joints, list), (
-            "Manipulator pose joints must be of type list")
-        assert len(joints) == self.joint_count, (
-            f"Manipulator pose joints must of length {self.joint_count}, got {len(joints)}")
-        self._joints = joints
-
-    def to_dict(self) -> dict:
-        return {
-            'name': self.name,
-            'joints': self.joints,
-        }
-
-    def from_dict(self, d: dict) -> None:
-        assert isinstance(d, dict), ("Poses in list must be of type dict.")
-        assert 'name' in d, ("Pose must have a name entry.")
-        assert 'joints' in d, ("Pose must have a joints entry.")
-        self.name = d['name']
-        self.joints = d['joints']
-
-
 class BaseManipulator(IndexedAccessory):
-    MANIPULATOR_MODEL = "base"
-    MANIPULATOR_TYPE = "manipulator"
+    MANIPULATOR_MODEL = 'base'
+    MANIPULATOR_TYPE = 'manipulator'
     ROS_PARAMETERS = {}
     ROS_PARAMETERS_TEMPLATE = {}
-    JOINT_COUNT = 0
 
     class ROSParameter:
         def __init__(
                 self,
                 key: str,
                 get: Callable,
-                set: Callable
+                set: Callable  # noqa:A002
                 ) -> None:
             self.key = key
             self.get = get
@@ -115,7 +60,6 @@ class BaseManipulator(IndexedAccessory):
             xyz: List[float] = Accessory.XYZ,
             rpy: List[float] = Accessory.RPY
             ) -> None:
-        self.poses = []
         # ROS Parameters
         self.ros_parameters_template = ros_parameters_template
         self.ros_parameters = ros_parameters
@@ -128,9 +72,6 @@ class BaseManipulator(IndexedAccessory):
         d['xyz'] = self.get_xyz()
         d['rpy'] = self.get_rpy()
         d['ros_parameters'] = self.get_ros_parameters()
-        d['poses'] = []
-        for pose in self.poses:
-            d['poses'].append(pose.to_dict())
         return d
 
     def from_dict(self, d: dict) -> None:
@@ -142,8 +83,6 @@ class BaseManipulator(IndexedAccessory):
             self.set_rpy(d['rpy'])
         if 'ros_parameters' in d:
             self.set_ros_parameters(d['ros_parameters'])
-        if 'poses' in d:
-            self.poses = d['poses']
 
     @classmethod
     def get_manipulator_model(cls) -> str:
@@ -155,7 +94,7 @@ class BaseManipulator(IndexedAccessory):
 
     @classmethod
     def get_name_from_idx(cls, idx: int) -> str:
-        return "%s_%s" % (
+        return '%s_%s' % (
             cls.get_manipulator_type(),
             idx
         )
@@ -166,12 +105,12 @@ class BaseManipulator(IndexedAccessory):
 
     @ros_parameters_template.setter
     def ros_parameters_template(self, d: dict) -> None:
-        assert isinstance(d, dict), ("Template must be of type 'dict'")
+        assert isinstance(d, dict), ('Template must be of type "dict"')
         # Check that template has all properties
         flat = flatten_dict(d)
         for _, val in flat.items():
             assert isinstance(val, property), (
-                "All entries in template must be properties."
+                'All entries in template must be properties.'
             )
         self._ros_parameters_template = d
 
@@ -187,7 +126,7 @@ class BaseManipulator(IndexedAccessory):
 
     @ros_parameters.setter
     def ros_parameters(self, d: dict) -> None:
-        assert isinstance(d, dict), ("ROS paramaters must be a dictionary")
+        assert isinstance(d, dict), ('ROS paramaters must be a dictionary')
         for d_k, d_v in flatten_dict(d).items():
             for key, prop in flatten_dict(self.ros_parameters_template).items():
                 if d_k == key:
@@ -205,17 +144,3 @@ class BaseManipulator(IndexedAccessory):
 
     def getter(self, prop: property):
         return prop.fget.__get__(self)
-
-    @property
-    def poses(self) -> List:
-        return self._poses
-
-    @poses.setter
-    def poses(self, pose_list: List) -> None:
-        assert isinstance(pose_list, list), ("List of poses must be of type list.")
-        poses_ = []
-        for pose in pose_list:
-            manipulator_pose = ManipulatorPose(self.JOINT_COUNT)
-            manipulator_pose.from_dict(pose)
-            poses_.append(manipulator_pose)
-        self._poses = poses_
