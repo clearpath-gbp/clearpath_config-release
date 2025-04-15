@@ -25,33 +25,32 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-from typing import List
-
 from clearpath_config.common.types.accessory import Accessory
-from clearpath_config.common.types.file import File
 from clearpath_config.common.types.ip import IP
 from clearpath_config.common.types.port import Port
+from clearpath_config.common.types.file import File
 from clearpath_config.common.utils.dictionary import extend_flat_dict
 from clearpath_config.sensors.types.sensor import BaseSensor
+from typing import List
 
 
 class BaseGPS(BaseSensor):
-    SENSOR_TYPE = 'gps'
-    SENSOR_MODEL = 'base'
-    TOPIC = 'fix'
+    SENSOR_TYPE = "gps"
+    SENSOR_MODEL = "base"
+    TOPIC = "fix"
 
-    FRAME_ID = 'link'
+    FRAME_ID = "link"
 
     class ROS_PARAMETER_KEYS:
-        FRAME_ID = 'node_name.frame_id'
+        FRAME_ID = "node_name.frame_id"
 
     class TOPICS:
-        FIX = 'fix'
+        FIX = "fix"
         NAME = {
-            FIX: 'fix',
+            FIX: "fix",
         }
-        TYPE = {
-            FIX: 'sensor_msgs/msg/NavSatFix',
+        RATE = {
+            FIX: 60,
         }
 
     def __init__(
@@ -69,7 +68,8 @@ class BaseGPS(BaseSensor):
             rpy: List[float] = Accessory.RPY
             ) -> None:
         # Frame ID
-        self.frame_id = frame_id
+        self.frame_id: str = self.FRAME_ID
+        self.set_frame_id(frame_id)
         # ROS Parameters Template
         template = {
             self.ROS_PARAMETER_KEYS.FRAME_ID: BaseGPS.frame_id,
@@ -87,14 +87,10 @@ class BaseGPS(BaseSensor):
             xyz,
             rpy
         )
-        # Topic Rates
-        self.rates = {
-            BaseGPS.TOPICS.FIX: 1,
-        }
 
     @classmethod
     def get_frame_id_from_idx(cls, idx: int) -> str:
-        return '%s_%s' % (
+        return "%s_%s" % (
             cls.get_name_from_idx(idx),
             cls.FRAME_ID
         )
@@ -110,7 +106,7 @@ class BaseGPS(BaseSensor):
         # Set Base: Name and Topic
         super().set_idx(idx)
         # Set Frame ID
-        self.frame_id = self.get_frame_id_from_idx(idx)
+        self.set_frame_id(self.get_frame_id_from_idx(idx))
 
     @property
     def frame_id(self) -> str:
@@ -121,22 +117,37 @@ class BaseGPS(BaseSensor):
         Accessory.assert_valid_link(link)
         self._frame_id = link
 
+    def get_frame_id(self) -> str:
+        return self.frame_id
+
+    def set_frame_id(self, link: str) -> None:
+        self.frame_id = link
+
     def has_imu(self) -> bool:
         return False
 
 
 class SwiftNavDuro(BaseGPS):
-    SENSOR_MODEL = 'swiftnav_duro'
+    SENSOR_MODEL = "swiftnav_duro"
 
-    FRAME_ID = 'link'
-    IP_ADDRESS = '192.168.131.30'
+    FRAME_ID = "link"
+    IP_ADDRESS = "192.168.131.30"
     IP_PORT = 55555
 
     class ROS_PARAMETER_KEYS:
-        FRAME_ID = 'duro_node.imu_frame_id'
-        GPS_FRAME = 'duro_node.gps_receiver_frame_id'
-        IP_ADDRESS = 'duro_node.ip_address'
-        IP_PORT = 'duro_node.port'
+        FRAME_ID = "duro_node.imu_frame_id"
+        GPS_FRAME = "duro_node.gps_receiver_frame_id"
+        IP_ADDRESS = "duro_node.ip_address"
+        IP_PORT = "duro_node.port"
+
+    class TOPICS:
+        FIX = "fix"
+        NAME = {
+            FIX: "fix",
+        }
+        RATE = {
+            FIX: 60,
+        }
 
     def __init__(
             self,
@@ -154,9 +165,11 @@ class SwiftNavDuro(BaseGPS):
             rpy: List[float] = Accessory.RPY
             ) -> None:
         # IP Address
-        self.ip = ip
+        self.ip: IP = IP(self.IP_ADDRESS)
+        self.set_ip(ip)
         # IP Port
-        self.port = port
+        self.port: Port = Port(self.IP_PORT)
+        self.set_port(port)
         # ROS Parameter Template
         ros_parameters_template = {
             self.ROS_PARAMETER_KEYS.IP_ADDRESS: SwiftNavDuro.ip,
@@ -177,11 +190,6 @@ class SwiftNavDuro(BaseGPS):
             xyz,
             rpy
         )
-        # Topic Rates
-        self.rates = {
-            # TODO: Be able to configure this rate through the robot.yaml
-            BaseGPS.TOPICS.FIX: 10,  # Update rate is controlled outside of ROS on the hardware
-        }
 
     @property
     def ip(self) -> str:
@@ -191,6 +199,12 @@ class SwiftNavDuro(BaseGPS):
     def ip(self, ip: str) -> None:
         self._ip = IP(str(ip))
 
+    def get_ip(self) -> str:
+        return str(self.ip)
+
+    def set_ip(self, ip: str) -> None:
+        self.ip = ip
+
     @property
     def port(self) -> int:
         return int(self._port)
@@ -199,38 +213,32 @@ class SwiftNavDuro(BaseGPS):
     def port(self, port: int) -> None:
         self._port = Port(int(port))
 
+    def get_port(self) -> int:
+        return int(self.port)
+
+    def set_port(self, port: int) -> None:
+        self.port = port
+
 
 class MicrostrainGQ7(BaseGPS):
-    SENSOR_MODEL = 'microstrain_gq7'
+    SENSOR_MODEL = "microstrain_gq7"
 
-    FRAME_ID = 'link'
-    PORT = '/dev/microstrain_main'
+    FRAME_ID = "link"
+    PORT = "/dev/microstrain_main"
     BAUD = 115200
-    GPS_RATE = 2
-    IMU_RATE = 100
-    MAG_RATE = 0
 
     class ROS_PARAMETER_KEYS:
-        FRAME_ID = 'microstrain_inertial_driver.frame_id'
-        PORT = 'microstrain_inertial_driver.port'
-        BAUD = 'microstrain_inertial_driver.baudrate'
-        GPS_RATE = 'microstrain_inertial_driver.gnss1_llh_position_data_rate'
-        IMU_RATE = 'microstrain_inertial_driver.imu_data_rate'
-        MAG_RATE = 'microstrain_inertial_driver.imu_mag_data_rate'
+        FRAME_ID = "microstrain_inertial_driver.frame_id"
+        PORT = "microstrain_inertial_driver.port"
+        BAUD = "microstrain_inertial_driver.baudrate"
 
     class TOPICS:
-        FIX = 'fix'
-        IMU_DATA = 'imu_data'
-        MAG = 'mag'
+        FIX = "fix"
         NAME = {
-            FIX: 'fix',
-            IMU_DATA: 'imu/data',
-            MAG: 'imu/mag'
+            FIX: "fix",
         }
-        TYPE = {
-            FIX: 'sensor_msgs/msg/NavSatFix',
-            IMU_DATA: 'sensor_msgs/msg/Imu',
-            MAG: 'sensor_msgs/msg/MagneticField'
+        RATE = {
+            FIX: 60,
         }
 
     def __init__(
@@ -241,9 +249,6 @@ class MicrostrainGQ7(BaseGPS):
             frame_id: str = FRAME_ID,
             port: str = PORT,
             baud: int = BAUD,
-            gps_rate: int = GPS_RATE,
-            imu_rate: int = IMU_RATE,
-            mag_rate: int = MAG_RATE,
             urdf_enabled: bool = BaseSensor.URDF_ENABLED,
             launch_enabled: bool = BaseSensor.LAUNCH_ENABLED,
             ros_parameters: str = BaseSensor.ROS_PARAMETERS,
@@ -255,17 +260,10 @@ class MicrostrainGQ7(BaseGPS):
         self.port = port
         # Baud
         self.baud = baud
-        # Rates
-        self.gps_rate = gps_rate
-        self.imu_rate = imu_rate
-        self.mag_rate = mag_rate
         # ROS Paramater Template
         ros_parameters_template = {
             self.ROS_PARAMETER_KEYS.PORT: MicrostrainGQ7.port,
-            self.ROS_PARAMETER_KEYS.BAUD: MicrostrainGQ7.baud,
-            self.ROS_PARAMETER_KEYS.GPS_RATE: MicrostrainGQ7.gps_rate,
-            self.ROS_PARAMETER_KEYS.IMU_RATE: MicrostrainGQ7.imu_rate,
-            self.ROS_PARAMETER_KEYS.MAG_RATE: MicrostrainGQ7.mag_rate
+            self.ROS_PARAMETER_KEYS.BAUD: MicrostrainGQ7.baud
         }
         super().__init__(
             idx,
@@ -280,12 +278,6 @@ class MicrostrainGQ7(BaseGPS):
             xyz,
             rpy
         )
-        # Topic Rates
-        self.rates = {
-            MicrostrainGQ7.TOPICS.FIX: MicrostrainGQ7.gps_rate,
-            MicrostrainGQ7.TOPICS.IMU_DATA: MicrostrainGQ7.imu_rate,
-            MicrostrainGQ7.TOPICS.MAG: MicrostrainGQ7.mag_rate,
-        }
 
     @property
     def port(self) -> str:
@@ -301,50 +293,34 @@ class MicrostrainGQ7(BaseGPS):
 
     @baud.setter
     def baud(self, baud: int) -> None:
-        assert isinstance(baud, int), ('Baud must be of type "int".')
-        assert baud >= 0, ('Baud must be positive integer.')
+        assert isinstance(baud, int), ("Baud must be of type 'int'.")
+        assert baud >= 0, ("Baud must be positive integer.")
         self._baud = baud
 
     def has_imu(self) -> bool:
         return True
 
-    @property
-    def gps_rate(self) -> int:
-        return self._gps_rate
-
-    @gps_rate.setter
-    def gps_rate(self, rate: int) -> None:
-        BaseSensor.assert_valid_rate(rate)
-        self._gps_rate = int(rate)
-
-    @property
-    def imu_rate(self) -> int:
-        return self._imu_rate
-
-    @imu_rate.setter
-    def imu_rate(self, rate: int) -> None:
-        self._imu_rate = int(rate)
-
-    @property
-    def mag_rate(self) -> int:
-        return self._mag_rate
-
-    @mag_rate.setter
-    def mag_rate(self, rate: int) -> None:
-        self._mag_rate = int(rate)
-
 
 class NMEA(BaseGPS):
-    SENSOR_MODEL = 'nmea_gps'
+    SENSOR_MODEL = "nmea_gps"
 
-    FRAME_ID = 'link'
-    PORT = '/dev/ttyACM0'
+    FRAME_ID = "link"
+    PORT = "/dev/ttyACM0"
     BAUD = 115200
 
     class ROS_PARAMETER_KEYS:
-        FRAME_ID = 'nmea_navsat_driver.frame_id'
-        PORT = 'nmea_navsat_driver.port'
-        BAUD = 'nmea_navsat_driver.baud'
+        FRAME_ID = "nmea_navsat_driver.frame_id"
+        PORT = "nmea_navsat_driver.port"
+        BAUD = "nmea_navsat_driver.baud"
+
+    class TOPICS:
+        FIX = "fix"
+        NAME = {
+            FIX: "fix",
+        }
+        RATE = {
+            FIX: 60,
+        }
 
     def __init__(
             self,
@@ -383,7 +359,6 @@ class NMEA(BaseGPS):
             xyz,
             rpy
         )
-        # TODO: Be able to configure the expected update rate using the robot.yaml
 
     @property
     def port(self) -> str:
@@ -399,16 +374,16 @@ class NMEA(BaseGPS):
 
     @baud.setter
     def baud(self, baud: int) -> None:
-        assert isinstance(baud, int), ('Baud must be of type "int".')
-        assert baud >= 0, ('Baud must be positive integer.')
+        assert isinstance(baud, int), ("Baud must be of type 'int'.")
+        assert baud >= 0, ("Baud must be positive integer.")
         self._baud = baud
 
 
 class Garmin18x(NMEA):
-    SENSOR_MODEL = 'garmin_18x'
+    SENSOR_MODEL = "garmin_18x"
 
-    FRAME_ID = 'link'
-    PORT = '/dev/ttyACM0'
+    FRAME_ID = "link"
+    PORT = "/dev/ttyACM0"
     BAUD = 115200
 
     def __init__(
@@ -439,17 +414,13 @@ class Garmin18x(NMEA):
             xyz,
             rpy
         )
-        # Topic Rates
-        self.rates = {
-            BaseGPS.TOPICS.FIX: 5,
-        }
 
 
 class NovatelSmart6(NMEA):
-    SENSOR_MODEL = 'novatel_smart6'
+    SENSOR_MODEL = "novatel_smart6"
 
-    FRAME_ID = 'link'
-    PORT = '/dev/ttyACM0'
+    FRAME_ID = "link"
+    PORT = "/dev/ttyACM0"
     BAUD = 115200
 
     def __init__(
@@ -483,10 +454,10 @@ class NovatelSmart6(NMEA):
 
 
 class NovatelSmart7(NMEA):
-    SENSOR_MODEL = 'novatel_smart7'
+    SENSOR_MODEL = "novatel_smart7"
 
-    FRAME_ID = 'link'
-    PORT = '/dev/ttyACM0'
+    FRAME_ID = "link"
+    PORT = "/dev/ttyACM0"
     BAUD = 115200
 
     def __init__(

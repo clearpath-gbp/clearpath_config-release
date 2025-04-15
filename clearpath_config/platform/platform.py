@@ -25,20 +25,20 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
+from clearpath_config.common.types.platform import Platform
 from clearpath_config.common.types.config import BaseConfig
 from clearpath_config.common.types.package_path import PackagePath
-from clearpath_config.common.types.platform import Platform
 from clearpath_config.common.utils.dictionary import flip_dict
+from clearpath_config.platform.battery import BatteryConfig
+from clearpath_config.platform.extras import ExtrasConfig
 from clearpath_config.platform.attachments.config import AttachmentsConfig
 from clearpath_config.platform.attachments.mux import AttachmentsConfigMux
-from clearpath_config.platform.battery import BatteryConfig
-from clearpath_config.platform.can import CANAdapterConfig, CANBridgeConfig
-from clearpath_config.platform.extras import ExtrasConfig
+from clearpath_config.platform.can import CANBridgeConfig
 
 
 class DescriptionPackagePath(PackagePath):
-    MACRO = 'macro'
-    PARAMETERS = 'parameters'
+    MACRO = "macro"
+    PARAMETERS = "parameters"
 
     def __init__(
             self,
@@ -83,39 +83,25 @@ class DescriptionPackagePath(PackagePath):
 
 class PlatformConfig(BaseConfig):
 
-    PLATFORM = 'platform'
+    PLATFORM = "platform"
 
     # Controllers
-    PS4 = 'ps4'
-    PS5 = 'ps5'
-    LOGITECH = 'logitech'
-    XBOX = 'xbox'
-    CONTROLLERS = [
-        PS4,
-        PS5,
-        LOGITECH,
-        XBOX
-    ]
+    PS4 = "ps4"
+    LOGITECH = "logitech"
 
-    CONTROLLER = 'controller'
-    ATTACHMENTS = 'attachments'
-    CAN_ADAPTERS = 'can_adapters'
-    CAN_BRIDGES = 'can_bridges'
-
+    CONTROLLER = "controller"
+    ATTACHMENTS = "attachments"
+    CAN_BRIDGES = "can_bridges"
     # Extras
-    EXTRAS = 'extras'
-
+    EXTRAS = "extras"
     # Generic Robot
-    DESCRIPTION = 'description'
-    LAUNCH = 'launch'
-    CONTROL = 'control'
-
+    DESCRIPTION = "description"
+    LAUNCH = "launch"
+    CONTROL = "control"
     # Battery
-    BATTERY = 'battery'
-
+    BATTERY = "battery"
     # Wheel
-    WHEEL = 'wheel'
-
+    WHEEL = "wheel"
     # Enable/disable EKF
     ENABLE_EKF = 'enable_ekf'
 
@@ -123,7 +109,6 @@ class PlatformConfig(BaseConfig):
         PLATFORM: {
             CONTROLLER: CONTROLLER,
             ATTACHMENTS: ATTACHMENTS,
-            CAN_ADAPTERS: CAN_ADAPTERS,
             CAN_BRIDGES: CAN_BRIDGES,
             EXTRAS: EXTRAS,
             DESCRIPTION: DESCRIPTION,
@@ -141,14 +126,13 @@ class PlatformConfig(BaseConfig):
         # PLATFORM
         CONTROLLER: PS4,
         ATTACHMENTS: {},
-        CAN_ADAPTERS: {},
         CAN_BRIDGES: {},
         EXTRAS: ExtrasConfig.DEFAULTS,
-        DESCRIPTION: '',
-        LAUNCH: '',
-        CONTROL: '',
+        DESCRIPTION: "",
+        LAUNCH: "",
+        CONTROL: "",
         BATTERY: BatteryConfig.DEFAULTS,
-        WHEEL: 'default',
+        WHEEL: "default",
         ENABLE_EKF: True,
     }
 
@@ -157,7 +141,6 @@ class PlatformConfig(BaseConfig):
             config: dict = {},
             controller: str = DEFAULTS[CONTROLLER],
             attachments: dict = DEFAULTS[ATTACHMENTS],
-            can_adapters: dict = DEFAULTS[CAN_ADAPTERS],
             can_bridges: dict = DEFAULTS[CAN_BRIDGES],
             battery: dict = DEFAULTS[BATTERY],
             extras: dict = DEFAULTS[EXTRAS],
@@ -168,7 +151,6 @@ class PlatformConfig(BaseConfig):
         self._config = {}
         self.controller = controller
         self.attachments = attachments
-        self.can_adapters = can_adapters
         self.can_bridges = can_bridges
         self._battery = BatteryConfig(battery)
         self._extras = ExtrasConfig(extras)
@@ -181,7 +163,6 @@ class PlatformConfig(BaseConfig):
         setters = {
             self.KEYS[self.CONTROLLER]: PlatformConfig.controller,
             self.KEYS[self.ATTACHMENTS]: PlatformConfig.attachments,
-            self.KEYS[self.CAN_ADAPTERS]: PlatformConfig.can_adapters,
             self.KEYS[self.CAN_BRIDGES]: PlatformConfig.can_bridges,
             self.KEYS[self.BATTERY]: PlatformConfig.battery,
             self.KEYS[self.EXTRAS]: PlatformConfig.extras,
@@ -219,7 +200,6 @@ class PlatformConfig(BaseConfig):
                 self.template = template
             # Reload battery
             self.battery.update(serial_number=serial_number)
-            self.can_adapters.update(serial_number=serial_number)
             self.can_bridges.update(serial_number=serial_number)
 
     @property
@@ -232,7 +212,10 @@ class PlatformConfig(BaseConfig):
 
     @controller.setter
     def controller(self, value: str) -> None:
-        assert value.lower() in self.CONTROLLERS, f'"{value.lower()}" controller is invalid. Must be one of "{self.CONTROLLERS}"'  # noqa:501
+        assert value.lower() in [self.PS4, self.LOGITECH], (
+            "'%s' controller is invalid. Must be one of: '%s'" % (
+                value.lower(),
+                [self.PS4, self.LOGITECH]))
         self._controller = value.lower()
 
     @property
@@ -247,20 +230,6 @@ class PlatformConfig(BaseConfig):
     def attachments(self, value: dict) -> None:
         self._attachments = AttachmentsConfigMux(
             self.get_platform_model(), value)
-
-    @property
-    def can_adapters(self) -> CANAdapterConfig:
-        self.set_config_param(
-            key=self.KEYS[self.CAN_ADAPTERS],
-            value=self._can_adapters.config
-        )
-        return self._can_adapters
-
-    @can_adapters.setter
-    def can_adapters(self, value: dict) -> None:
-        self._can_adapters = CANAdapterConfig()
-        self._can_adapters.update(True)
-        self._can_adapters.config = value
 
     @property
     def can_bridges(self) -> CANBridgeConfig:
@@ -291,7 +260,7 @@ class PlatformConfig(BaseConfig):
         else:
             assert isinstance(value, dict) or (
                     isinstance(value, ExtrasConfig)), (
-                'Extras must be of type "dict" or "ExtrasConfig"'
+                "Extras must be of type 'dict' or 'ExtrasConfig'"
             )
 
     def get_controller(self) -> str:
@@ -358,7 +327,9 @@ class PlatformConfig(BaseConfig):
             self._battery = value
         else:
             assert isinstance(value, dict) or (
-                isinstance(value, BatteryConfig)), 'Battery configuration must be of type "dict" or "BatteryConfig"'  # noqa:E501
+                isinstance(value, BatteryConfig)), (
+                "Battery configuration must be of type 'dict' or 'BatteryConfig'"
+            )
 
     @property
     def wheel(self) -> str:
