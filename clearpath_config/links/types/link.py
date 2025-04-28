@@ -25,9 +25,9 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-from clearpath_config.common.types.accessory import Accessory
-from clearpath_config.common.types.material import Material
 from typing import List
+
+from clearpath_config.common.types.accessory import Accessory
 
 
 class BaseLink(Accessory):
@@ -37,7 +37,7 @@ class BaseLink(Accessory):
     Parameters
     ----------
     name : str
-        Required. Results in "{name}_link" in URDF.
+        Required. Results in '{name}_link' in URDF.
     parent : str
         Parent link in URDF.
     xyz: List[float]
@@ -56,10 +56,9 @@ class BaseLink(Accessory):
 
     """
 
-    LINK_TYPE = "base"
+    LINK_TYPE = 'base'
     OFFSET_XYZ = [0.0, 0.0, 0.0]
     OFFSET_RPY = [0.0, 0.0, 0.0]
-    MATERIAL = {'name': 'clearpath_dark_grey'}
 
     def __init__(
             self,
@@ -68,15 +67,13 @@ class BaseLink(Accessory):
             xyz: List[float] = Accessory.XYZ,
             rpy: List[float] = Accessory.RPY,
             offset_xyz: List[float] = OFFSET_XYZ,
-            offset_rpy: List[float] = OFFSET_RPY,
-            material: Material | dict = MATERIAL
+            offset_rpy: List[float] = OFFSET_RPY
             ) -> None:
         super().__init__(name, parent, xyz, rpy)
         self.offset_xyz: List[float] = BaseLink.OFFSET_XYZ
         self.set_offset_xyz(offset_xyz)
         self.offset_rpy: List[float] = BaseLink.OFFSET_RPY
         self.set_offset_rpy(offset_rpy)
-        self.material = material
 
     def to_dict(self) -> dict:
         d = {}
@@ -84,7 +81,6 @@ class BaseLink(Accessory):
         d['parent'] = self.get_parent()
         d['xyz'] = self.get_xyz()
         d['rpy'] = self.get_rpy()
-        d['material'] = self.material.to_dict()
         return d
 
     def from_dict(self, d: dict) -> None:
@@ -96,8 +92,6 @@ class BaseLink(Accessory):
             self.set_xyz(d['xyz'])
         if 'rpy' in d:
             self.set_rpy(d['rpy'])
-        if 'material' in d:
-            self.material = d['material']
 
     @classmethod
     def get_link_type(cls) -> str:
@@ -106,7 +100,7 @@ class BaseLink(Accessory):
     def set_offset_xyz(self, xyz: List[float]) -> None:
         Accessory.assert_valid_triplet(
             xyz,
-            "Offset XYZ must be a list of exactly three float values"
+            'Offset XYZ must be a list of exactly three float values'
         )
         self.offset_xyz = xyz
 
@@ -116,18 +110,6 @@ class BaseLink(Accessory):
     def set_offset_rpy(self, rpy: List[float]) -> None:
         Accessory.assert_valid_triplet(
             rpy,
-            "Offset RPY must be a list of exactly three float values"
+            'Offset RPY must be a list of exactly three float values'
         )
         self.offset_rpy = rpy
-
-    @property
-    def material(self) -> Material:
-        return self._material
-
-    @material.setter
-    def material(self, material: Material | dict) -> None:
-        if isinstance(material, Material):
-            self._material = material
-        if isinstance(material, dict):
-            self._material = Material()
-            self._material.from_dict(material)
