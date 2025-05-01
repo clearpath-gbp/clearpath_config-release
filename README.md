@@ -1,3 +1,26 @@
+## clearpath_config (jazzy) - 2.4.0-1
+
+The packages in the `clearpath_config` repository were released into the `jazzy` distro by running `/usr/bin/bloom-release clearpath_config -r jazzy -t jazzy` on `Thu, 01 May 2025 14:15:11 -0000`
+
+The `clearpath_config` package was released.
+
+Version of package(s) in repository `clearpath_config`:
+
+- upstream repository: https://github.com/clearpathrobotics/clearpath_config.git
+- release repository: https://github.com/clearpath-gbp/clearpath_config-release.git
+- rosdistro version: `2.3.0-1`
+- old version: `2.3.1-1`
+- new version: `2.4.0-1`
+
+Versions of tools used:
+
+- bloom version: `0.12.0`
+- catkin_pkg version: `1.0.0`
+- rosdep version: `0.25.1`
+- rosdistro version: `1.0.1`
+- vcstools version: `0.1.42`
+
+
 ## clearpath_config (jazzy) - 2.3.1-1
 
 The packages in the `clearpath_config` repository were released into the `jazzy` distro by running `/usr/bin/bloom-release clearpath_config -r jazzy -t jazzy` on `Mon, 28 Apr 2025 17:23:27 -0000`
