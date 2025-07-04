@@ -26,7 +26,10 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 from typing import List
+
+from clearpath_config.common.ros import ROS_DISTRO
 from clearpath_config.common.types.accessory import Accessory
+from clearpath_config.common.types.exception import UnsupportedAccessoryException
 from clearpath_config.common.types.ip import IP
 from clearpath_config.common.types.port import Port
 from clearpath_config.manipulators.types.grippers import Gripper
@@ -34,15 +37,16 @@ from clearpath_config.manipulators.types.manipulator import BaseManipulator
 
 
 class BaseArm(BaseManipulator):
-    MANIPULATOR_MODEL = "base"
-    MANIPULATOR_TYPE = "arm"
+    MANIPULATOR_MODEL = 'base'
+    MANIPULATOR_TYPE = 'arm'
 
-    IP_ADDRESS = "ip"
-    IP_PORT = "port"
-    DEFAULT_IP_ADDRESS = "192.168.131.40"
+    IP_ADDRESS = 'ip'
+    IP_PORT = 'port'
+    DEFAULT_IP_ADDRESS = '192.168.131.40'
     DEFAULT_IP_PORT = 10000
 
-    END_EFFECTOR_LINK = "end_effector"
+    URDF_PARAMETERS = {}
+    END_EFFECTOR_LINK = 'end_effector'
 
     def __init__(
             self,
@@ -122,28 +126,39 @@ class BaseArm(BaseManipulator):
 
 
 class KinovaGen3Dof6(BaseArm):
-    MANIPULATOR_MODEL = "kinova_gen3_6dof"
+    MANIPULATOR_MODEL = 'kinova_gen3_6dof'
     JOINT_COUNT = 6
-    END_EFFECTOR_LINK = "end_effector_link"
+    END_EFFECTOR_LINK = 'end_effector_link'
+
+    @staticmethod
+    def assert_is_supported():
+        raise UnsupportedAccessoryException(f'Kinova Gen3 is not yet supported in {ROS_DISTRO}')
 
 
 class KinovaGen3Dof7(BaseArm):
-    MANIPULATOR_MODEL = "kinova_gen3_7dof"
+    MANIPULATOR_MODEL = 'kinova_gen3_7dof'
     JOINT_COUNT = 7
-    END_EFFECTOR_LINK = "end_effector_link"
+    END_EFFECTOR_LINK = 'end_effector_link'
+
+    @staticmethod
+    def assert_is_supported():
+        raise UnsupportedAccessoryException(f'Kinova Gen3 is not yet supported in {ROS_DISTRO}')
 
 
 class KinovaGen3Lite(BaseArm):
-    MANIPULATOR_MODEL = "kinova_gen3_lite"
+    MANIPULATOR_MODEL = 'kinova_gen3_lite'
     JOINT_COUNT = 6
-    END_EFFECTOR_LINK = "end_effector_link"
+    END_EFFECTOR_LINK = 'end_effector_link'
+
+    @staticmethod
+    def assert_is_supported():
+        raise UnsupportedAccessoryException(f'Kinova Gen3 Lite is not yet supported in {ROS_DISTRO}')  # noqa:501
 
 
 class UniversalRobots(BaseArm):
-    MANIPULATOR_MODEL = "universal_robots"
+    MANIPULATOR_MODEL = 'universal_robots'
     JOINT_COUNT = 6
-    END_EFFECTOR_LINK = "tool0"
-
+    END_EFFECTOR_LINK = 'tool0'
     # Description Variables
     UR_TYPE = 'ur_type'
     INITIAL_POSITIONS = 'initial_positions'
@@ -156,7 +171,6 @@ class UniversalRobots(BaseArm):
     SAFETY_POS_MARGIN = 'safety_pos_margin'
     SAFETY_K_POSITION = 'safety_k_position'
     # Control Parameters
-    GENERATE_ROS2_CONTROL_TAG = 'generate_ros2_control_tag'
     HEADLESS_MODE = 'headless_mode'
     IP_ADDRESS = 'robot_ip'
     SCRIPT_FILENAME = 'script_filename'
@@ -181,24 +195,10 @@ class UniversalRobots(BaseArm):
     TOOL_DEVICE_NAME = 'tool_device_name'
     TOOL_TCP_PORT = 'tool_tcp_port'
     # Simulation Parameters
-    USE_FAKE_HARDWARE = 'use_fake_hardware'
-    FAKE_SENSOR_COMMANDS = 'fake_sensor_commands'
+    USE_MOCK_HARDWARE = 'use_mock_hardware'
+    MOCK_SENSOR_COMMANDS = 'mock_sensor_commands'
     SIM_GAZEBO = 'sim_gazebo'
     SIM_IGNITION = 'sim_ignition'
-    # UR Type
-    UR3 = 'ur3'
-    UR3E = 'ur3e'
-    UR5 = 'ur5'
-    UR5E = 'ur5e'
-    UR10 = 'ur10'
-    UR10E = 'ur10e'
-    UR15 = 'ur15'
-    UR16E = 'ur16e'
-    UR20 = 'ur20'
-    UR20E = 'ur20e'
-    UR30 = 'ur30'
-    DEFAULT_UR_TYPE = UR5E
-    UR_TYPES = [UR3, UR3E, UR5, UR5E, UR10, UR10E, UR15, UR16E, UR20, UR20E, UR30]
 
     # URDF Parameters
     URDF_PARAMETERS = {
@@ -212,7 +212,6 @@ class UniversalRobots(BaseArm):
         SAFETY_LIMITS: '',
         SAFETY_POS_MARGIN: '',
         SAFETY_K_POSITION: '',
-        GENERATE_ROS2_CONTROL_TAG: '',
         HEADLESS_MODE: '',
         IP_ADDRESS: '',
         SCRIPT_FILENAME: '',
@@ -235,148 +234,21 @@ class UniversalRobots(BaseArm):
         TOOL_TX_IDLE_CHARS: '',
         TOOL_DEVICE_NAME: '',
         TOOL_TCP_PORT: '',
-        USE_FAKE_HARDWARE: '',
-        FAKE_SENSOR_COMMANDS: '',
+        USE_MOCK_HARDWARE: '',
+        MOCK_SENSOR_COMMANDS: '',
         SIM_GAZEBO: '',
         SIM_IGNITION: '',
     }
 
-    def __init__(
-            self,
-            idx: int = None,
-            name: str = None,
-            ip: str = BaseArm.DEFAULT_IP_ADDRESS,
-            port: int = BaseArm.DEFAULT_IP_PORT,
-            ur_type: str = DEFAULT_UR_TYPE,
-            ros_parameters: dict = BaseManipulator.ROS_PARAMETERS,
-            ros_parameters_template: dict = BaseManipulator.ROS_PARAMETERS_TEMPLATE,
-            parent: str = Accessory.PARENT,
-            xyz: List[float] = Accessory.XYZ,
-            rpy: List[float] = Accessory.RPY
-            ) -> None:
-        super().__init__(
-            idx, name, ip, port, ros_parameters, ros_parameters_template, parent, xyz, rpy)
-        self.ur_type = ur_type
-
-    def from_dict(self, d: dict) -> None:
-        super().from_dict(d)
-        if self.UR_TYPE in d:
-            self.ur_type = d[self.UR_TYPE]
-
-    @property
-    def ur_type(self) -> str:
-        return self._ur_type
-
-    @ur_type.setter
-    def ur_type(self, value: str) -> None:
-        assert value in self.UR_TYPES, (
-            f'Universal Robot ur_type must be one of {self.UR_TYPES}, got: {value}')
-        self._ur_type = value
-
-
-class Franka(BaseArm):
-    MANIPULATOR_MODEL = 'franka'
-    FER = 'fer'
-    FP3 = 'fp3'
-    FR3 = 'fr3'
-    ARM_ID = 'arm_id'
-    ARM_IDS = [FER, FP3, FR3]
-    DEFAULT_ARM_ID = FR3
-    END_EFFECTOR_LINK = 'link8'
-
-    # Description Variables
-    JOINT_LIMITS = 'joint_limits'
-    JOINT_LIMITS_PARAMETERS_FILE = 'joint_limits_parameters_file'
-    INERTIALS = 'inertials'
-    INERTIALS_PARAMETERS_FILE = 'inertials_parameters_file'
-    KINEMATICS = 'kinematics'
-    KINEMATICS_PARAMETERS_FILE = 'kinematics_parameters_file'
-    DYNAMICS = 'dynamics'
-    DYNAMICS_PARAMETERS_FILE = 'dynamics_parameters_file'
-    GAZEBO = 'gazebo'
-    HAND = 'hand'
-    EE_ID = 'ee_id'
-    WITH_SC = 'with_sc'
-    ROS2_CONTROL = 'ros2_control'
-    IP_ADDRESS = 'robot_ip'
-    USE_FAKE_HARDWARE = 'use_fake_hardware'
-    FAKE_SENSOR_COMMANDS = 'fake_sensor_commands'
-    GAZEBO_EFFORT = 'gazebo_effort'
-    NO_PREFIX = 'no_prefix'
-    ARM_PREFIX = 'arm_prefix'
-    CONNECTED_TO = 'connected_to'
-
-    URDF_PARAMETERS = {
-        JOINT_LIMITS: '',
-        JOINT_LIMITS_PARAMETERS_FILE: '',
-        INERTIALS: '',
-        INERTIALS_PARAMETERS_FILE: '',
-        KINEMATICS: '',
-        KINEMATICS_PARAMETERS_FILE: '',
-        DYNAMICS: '',
-        DYNAMICS_PARAMETERS_FILE: '',
-        GAZEBO: '',
-        HAND: '',
-        EE_ID: '',
-        WITH_SC: '',
-        ROS2_CONTROL: '',
-        IP_ADDRESS: '',
-        USE_FAKE_HARDWARE: '',
-        FAKE_SENSOR_COMMANDS: '',
-        GAZEBO_EFFORT: '',
-        NO_PREFIX: '',
-        ARM_PREFIX: '',
-        CONNECTED_TO: '',
-    }
-
-    def __init__(
-            self,
-            idx: int = None,
-            name: str = None,
-            ip: str = BaseArm.DEFAULT_IP_ADDRESS,
-            port: int = BaseArm.DEFAULT_IP_PORT,
-            arm_id: str = DEFAULT_ARM_ID,
-            ros_parameters: dict = BaseManipulator.ROS_PARAMETERS,
-            ros_parameters_template: dict = BaseManipulator.ROS_PARAMETERS_TEMPLATE,
-            parent: str = Accessory.PARENT,
-            xyz: List[float] = Accessory.XYZ,
-            rpy: List[float] = Accessory.RPY
-            ) -> None:
-        super().__init__(
-            idx, name, ip, port, ros_parameters, ros_parameters_template, parent, xyz, rpy)
-        self.arm_id = arm_id
-
-    def from_dict(self, d: dict) -> None:
-        self.config = d
-        super().from_dict(d)
-        if 'gripper' in d:
-            self.gripper.arm_id = self.arm_id
-
-    @property
-    def arm_id(self) -> str:
-        return self._arm_id
-
-    @arm_id.setter
-    def arm_id(self, value: str) -> None:
-        assert value in self.ARM_IDS, (
-            f'Franka arm_id must be one of {self.ARM_IDS}, got: {value}')
-        self._arm_id = value
-
-    def set_idx(self, idx: int) -> None:
-        super().set_idx(idx)
-        if self.gripper:
-            self.gripper.parent = f'{self.name}_{self.arm_id}_{self.END_EFFECTOR_LINK}'
-
 
 class Arm():
-    FRANKA = Franka.MANIPULATOR_MODEL
+
     KINOVA_GEN3_6DOF = KinovaGen3Dof6.MANIPULATOR_MODEL
     KINOVA_GEN3_7DOF = KinovaGen3Dof7.MANIPULATOR_MODEL
     KINOVA_GEN3_LITE = KinovaGen3Lite.MANIPULATOR_MODEL
     UNIVERSAL_ROBOTS = UniversalRobots.MANIPULATOR_MODEL
 
     MODEL = {
-        FRANKA: Franka,
         KINOVA_GEN3_6DOF: KinovaGen3Dof6,
         KINOVA_GEN3_7DOF: KinovaGen3Dof7,
         KINOVA_GEN3_LITE: KinovaGen3Lite,
@@ -385,12 +257,7 @@ class Arm():
 
     @classmethod
     def assert_model(cls, model: str) -> None:
-        assert model in cls.MODEL, (
-            "Arm model '%s' must be one of: '%s'" % (
-                model,
-                cls.MODEL.keys()
-            )
-        )
+        assert model in cls.MODEL, f'Arm model "{model}" must be one of "{cls.MODEL.keys()}"'
 
     def __new__(cls, model: str) -> BaseArm:
         cls.assert_model(model)
