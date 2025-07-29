@@ -25,27 +25,26 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
+
 import os
 from typing import List
 
 from clearpath_config.common.types.config import BaseConfig
 from clearpath_config.common.types.discovery import Discovery
-from clearpath_config.common.types.exception import UnsupportedMiddlewareException
 from clearpath_config.common.types.hostname import Hostname
-from clearpath_config.common.types.platform import Platform
 from clearpath_config.common.types.rmw_implementation import RMWImplementation
 from clearpath_config.common.utils.dictionary import flip_dict
 from clearpath_config.system.hosts import HostListConfig
-from clearpath_config.system.servers import ServerConfig, ServerListConfig
+from clearpath_config.system.servers import ServerListConfig, ServerConfig
 
 
 class MiddlewareConfig(BaseConfig):
-    MIDDLEWARE = 'middleware'
-    RMW = 'implementation'
-    DISCOVERY = 'discovery'
-    PROFILE = 'profile'
-    OVERRIDE_SERVER_ID = 'override_server_id'
-    SERVERS = 'servers'
+    MIDDLEWARE = "middleware"
+    RMW = "implementation"
+    DISCOVERY = "discovery"
+    PROFILE = "profile"
+    OVERRIDE_SERVER_ID = "override_server_id"
+    SERVERS = "servers"
 
     TEMPLATE = {
         MIDDLEWARE: {
@@ -62,7 +61,7 @@ class MiddlewareConfig(BaseConfig):
     DEFAULTS = {
         RMW: RMWImplementation.DEFAULT,
         DISCOVERY: Discovery.DEFAULT,
-        PROFILE: '',
+        PROFILE: "",
         OVERRIDE_SERVER_ID: False,
         SERVERS: [],
     }
@@ -76,7 +75,7 @@ class MiddlewareConfig(BaseConfig):
             override_server_id: bool = DEFAULTS[OVERRIDE_SERVER_ID],
             servers: List[dict] | ServerListConfig = DEFAULTS[SERVERS],
             hosts: HostListConfig = None,
-            localhost: Hostname = None,
+            localhost: Hostname = None
             ) -> None:
         # Initialization
         self._config = {}
@@ -115,7 +114,7 @@ class MiddlewareConfig(BaseConfig):
             self._rmw_implementation = value
         else:
             assert (isinstance(value, str)) or (isinstance(value, RMWImplementation)), (
-                f'RMW value of {value} is invalid, must be of type "str" or "RMWImplementation"'
+                f"RMW value of {value} is invalid, must be of type 'str' or 'RMWImplementation'"
             )
 
     @property
@@ -135,8 +134,8 @@ class MiddlewareConfig(BaseConfig):
         else:
             assert (
                 isinstance(value, str)) or (isinstance(value, Discovery)), (
-                f'Discovery mode value of {value} is invalid.'
-                f'Discovery mode must be of type "str" or "RMWImplementation"'
+                f"Discovery mode value of {value} is invalid."
+                f"Discovery mode must be of type 'str' or 'RMWImplementation'"
             )
         self._discovery = value
 
@@ -152,12 +151,12 @@ class MiddlewareConfig(BaseConfig):
     def profile(self, value: str) -> None:
         # Check Type
         assert isinstance(value, str), (
-            f'Middleware profile {value} is invalid, must be a string'
+            f"Middleware profile {value} is invalid, must be a string"
         )
         # Valid file
         if value != self.DEFAULTS[self.PROFILE]:
             assert os.path.exists(value), (
-                f'Middleware profile path {value} does not exist'
+                f"Middleware profile path {value} does not exist"
             )
         self._profile = value
         return
@@ -173,7 +172,7 @@ class MiddlewareConfig(BaseConfig):
     @override_server_id.setter
     def override_server_id(self, value: bool) -> None:
         assert isinstance(value, bool), (
-            f'Override server_id value of {value} is invalid, must be a boolean')
+            f"Override server_id value of {value} is invalid, must be a boolean")
         self._override_server_id = value
 
     @property
@@ -190,9 +189,9 @@ class MiddlewareConfig(BaseConfig):
         # Generate a list of ServerConfig Objects based on how the input was provided
         server_list = []
         if isinstance(value, list):
-            assert all([isinstance(i, dict) for i in value]), (  # noqa:C419
-                f'Server {value} is invalid, must be list of ' +
-                'type "dict" or of type "ServerListConfig"'
+            assert all([isinstance(i, dict) for i in value]), (
+                f"Server {value} is invalid, must be list of " +
+                "type 'dict' or of type 'ServerListConfig'"
             )
             # If the servers were not explicitly listed, assume every device in the hosts list
             # should have its own discovery server running
@@ -202,13 +201,13 @@ class MiddlewareConfig(BaseConfig):
 
             for d in value:
                 assert isinstance(d, dict), (
-                    f'Server value of {d} is invalid, it must be of type "dict"'
+                    f"Server value of {d} is invalid, it must be of type 'dict'"
                 )
                 server_list.append(ServerConfig(config=d))
         else:
             assert isinstance(value, ServerListConfig), (
-                f'Servers {value} is invalid, must be list of ' +
-                'type "dict" or of type "ServerListConfig"'
+                f"Servers {value} is invalid, must be list of " +
+                "type 'dict' or of type 'ServerListConfig'"
             )
             server_list = value.get_all()
 
@@ -217,13 +216,13 @@ class MiddlewareConfig(BaseConfig):
             # if a host name was provided, use the look up to determine the ip address
             if server.hostname:
                 assert any(server.hostname == s.hostname for s in self.hosts.get_all()), (
-                    f'Provided hostname: {server.hostname} is not listed in the hosts list'
+                    f"Provided hostname: {server.hostname} is not listed in the hosts list"
                 )
                 match = next((s for s in self.hosts.get_all() if s.hostname == server.hostname))
                 server.ip_address = match.ip_address
             else:
                 assert server.ip_address, (
-                    f'Server {server} is listed without a host name or IP address.'
+                    f"Server {server} is listed without a host name or IP address."
                 )
 
         for server in server_list:
@@ -231,8 +230,8 @@ class MiddlewareConfig(BaseConfig):
             count = sum(((s.ip_address == server.ip_address) and (s.port == server.port))
                         for s in server_list)
             assert count == 1, (
-                f'Discovery server {server} conflicts with another discovery server. ' +
-                'Each combination of host/ip and port number must be unique.'
+                f"Discovery server {server} conflicts with another discovery server. " +
+                "Each combination of host/ip and port number must be unique."
             )
 
         # sort the servers by host/ip address and then port
@@ -250,8 +249,8 @@ class MiddlewareConfig(BaseConfig):
             for server in server_list:
                 count = sum(s.server_id == server.server_id for s in server_list)
                 assert count == 1, (
-                    f'Server {server} does not have a unique server id. While ' +
-                    'override_server_id is true, each server must have a unique id specified.'
+                    f"Server {server} does not have a unique server id. While " +
+                    "override_server_id is true, each server must have a unique id specified."
                 )
 
         servers = ServerListConfig()
@@ -284,20 +283,3 @@ class MiddlewareConfig(BaseConfig):
                                                         s.enabled)), None)
         # returns None if the localhost is not listed in the server list
         return local_server
-
-    def assert_is_supported_on_patform(self, platform) -> None:
-        """
-        Make sure that the user's middleware is compatible.
-
-        FastDDS is supported on everything.
-
-        Zenoh is only supported on platforms that do not use MicroROS.
-
-        @param platform  The type of platform we're running on
-
-        @exception  Raises an UnsupportedMiddlewareException if the platform cannot use
-                    this middleware
-        """
-        if self.rmw_implementation == RMWImplementation.ZENOH_DDS:
-            if (platform != Platform.A200 and platform != Platform.GENERIC):
-                raise UnsupportedMiddlewareException(f'Cannot use {self.rmw_implementation} on platform {platform}')  # noqa: E501

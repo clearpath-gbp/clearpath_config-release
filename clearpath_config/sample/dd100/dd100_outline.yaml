@@ -1,7 +1,7 @@
 serial_number: dd100-0000
 version: 0
 system:
-  username: robot
+  username: administrator
   hosts:
     - hostname: cpr-dd100-0000
       ip: 192.168.131.1
