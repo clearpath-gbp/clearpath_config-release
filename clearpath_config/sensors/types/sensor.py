@@ -25,21 +25,22 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
+import copy
+import os
+from typing import Callable, List
+
 from clearpath_config.common.types.accessory import Accessory, IndexedAccessory
 from clearpath_config.common.types.config import BaseConfig
 from clearpath_config.common.utils.dictionary import (
     flatten_dict,
     unflatten_dict
 )
-from typing import List, Callable
-import copy
-import os
 
 
 class BaseSensor(IndexedAccessory):
-    SENSOR_TYPE = "generic"
-    SENSOR_MODEL = "base"
-    TOPIC = "base"
+    SENSOR_TYPE = 'generic'
+    SENSOR_MODEL = 'base'
+    TOPIC = 'base'
     URDF_ENABLED = True
     LAUNCH_ENABLED = True
     ROS_PARAMETERS = {}
@@ -47,14 +48,14 @@ class BaseSensor(IndexedAccessory):
 
     class TOPICS:
         NAME = {}
-        RATE = {}
+        TYPE = {}
 
     class ROSParameter:
         def __init__(
                 self,
                 key: str,
                 get: Callable,
-                set: Callable
+                set: Callable  # noqa:A002
                 ) -> None:
             self.key = key
             self.get = get
@@ -78,6 +79,10 @@ class BaseSensor(IndexedAccessory):
         # - should match the Clearpath API
         self.topic = str()
         self.set_topic(topic)
+        # Rates:
+        # - should be a dictionary matching those in the TOPICS class
+        # - should be updated as necessary to reflect current operation
+        self.rates = {}
         # URDF Enable
         # - enables the sensor description in the generated URDF
         self.urdf_enabled = True
@@ -117,6 +122,21 @@ class BaseSensor(IndexedAccessory):
         if 'ros_parameters' in d:
             self.set_ros_parameters(d['ros_parameters'])
 
+    @staticmethod
+    def assert_valid_rate(rate: float | int) -> None:
+        assert isinstance(rate, (float, int)), (
+            'Rate "%s" is invalid, must be an integer or float.' % rate
+        )
+        assert 0 <= rate, (
+            'Rate "%s" must be a positive integer or float.' % rate
+        )
+
+    @staticmethod
+    def assert_is_ipv4_address(addr: str) -> None:
+        import re
+        ipv4_re = re.compile(r'^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$')
+        assert re.match(ipv4_re, addr) is not None
+
     @classmethod
     def get_sensor_type(cls) -> str:
         return cls.SENSOR_TYPE
@@ -127,14 +147,14 @@ class BaseSensor(IndexedAccessory):
 
     @classmethod
     def get_name_from_idx(cls, idx: int) -> str:
-        return "%s_%s" % (
+        return '%s_%s' % (
             cls.get_sensor_type(),
             idx
         )
 
     @classmethod
     def get_topic_from_idx(cls, idx: int) -> str:
-        return "%s/%s" % (
+        return '%s/%s' % (
             cls.get_name_from_idx(idx),
             cls.TOPIC
         )
@@ -143,32 +163,28 @@ class BaseSensor(IndexedAccessory):
         super().set_idx(idx)
         self.topic = self.get_topic_from_idx(idx)
 
-    def get_topic(self, topic: str, local=False) -> str:
-        assert topic in self.TOPICS.NAME, (
-            "Topic must be one of %s" % [i for i in self.TOPICS.NAME]
-        )
+    def get_topic_name(self, topic: str, local=False) -> str:
+        assert topic in self.TOPICS.NAME, f'Topic must be one of {self.TOPICS.NAME.keys()}'
         if local:
-            return os.path.join("sensors", self.name, self.TOPICS.NAME[topic])
+            return os.path.join('sensors', self.name, self.TOPICS.NAME[topic])
         else:
             ns = BaseConfig.get_namespace()
-            return os.path.join(ns, "sensors", self.name, self.TOPICS.NAME[topic])
+            return os.path.join(ns, 'sensors', self.name, self.TOPICS.NAME[topic])
 
-    def get_topic_rate(self, topic: str) -> float:
-        assert topic in self.TOPICS.RATE, (
-            "Topic must be one of %s" % [i for i in self.TOPICS.RATE]
-        )
-        if isinstance(self.TOPICS.RATE[topic], property):
-            return self.TOPICS.RATE[topic].fget.__get__(self)
+    def get_topic_type(self, topic: str) -> str:
+        assert topic in self.TOPICS.TYPE, f'Topic must be one of {self.TOPICS.TYPE.keys()}'
+        return self.TOPICS.TYPE[topic]
+
+    def get_topic_rate(self, topic: str) -> float | int:
+        assert topic in self.rates, f'Topic must be one of {self.rates.keys()}'
+        if isinstance(self.rates[topic], property):
+            return self.rates[topic].fget.__get__(self)()
         else:
-            return self.TOPICS.RATE[topic]
+            return self.rates[topic]
 
-    def set_topic(self, topic: str) -> None:
-        assert isinstance(topic, str), (
-            "Topic '%s' of type '%s', expected 'str'" % (topic, type(topic))
-        )
-        assert " " not in topic, (
-            "Topic '%s' contains empty spaces." % topic
-        )
+    def set_topic(self, topic: str) -> None:  # TODO: Should this be removed?
+        assert isinstance(topic, str), f'Topic "{topic}" is of type "{type(topic)}", expected "str"'  # noqa:501
+        assert ' ' not in topic, f'Topic "{topic}" contains whitespace'
         self.topic = topic
 
     def enable_urdf(self) -> None:
@@ -201,12 +217,12 @@ class BaseSensor(IndexedAccessory):
 
     @ros_parameters_template.setter
     def ros_parameters_template(self, d: dict) -> None:
-        assert isinstance(d, dict), ("Template must be of type 'dict'")
+        assert isinstance(d, dict), ('Template must be of type "dict"')
         # Check that template has all properties
         flat = flatten_dict(d)
         for _, val in flat.items():
             assert isinstance(val, property), (
-                "All entries in template must be properties."
+                'All entries in template must be properties.'
             )
         self._ros_parameters_template = d
 
@@ -224,7 +240,7 @@ class BaseSensor(IndexedAccessory):
 
     @ros_parameters.setter
     def ros_parameters(self, d: dict) -> None:
-        assert isinstance(d, dict), ("ROS paramaters must be a dictionary")
+        assert isinstance(d, dict), ('ROS parameters must be a dictionary')
         for d_k, d_v in flatten_dict(d).items():
             for key, prop in flatten_dict(self.ros_parameters_template).items():
                 if d_k == key:
