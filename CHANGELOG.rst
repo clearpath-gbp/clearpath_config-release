@@ -2,6 +2,33 @@
 Changelog for package clearpath_config
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.7.0 (2025-08-25)
+------------------
+* Drivetrains (`#178 <https://github.com/clearpathrobotics/clearpath_config/issues/178>`_)
+  * Added drivetrain support
+  * Split 2wd into fwd and rwd
+  * Added samples
+  * Renamed drivetrain 'type' to 'control'
+  * Split wheels into front and rear
+  * Added caster wheel
+  * Removed 2WD options for Dingo-O and Ridgeback
+  * Changed J100, A200, W200 to 4WD
+  * Reset the global serial number variable
+  * Fixed A300 sample drivetrain section
+  * Added drivetrain to other platform outline samples
+  * Fixed Dingo-D control type
+  ---------
+  Co-authored-by: Luis Camero <lcamero@clearpathrobotics.com>
+* Add the 2d lidar to the wireless charger (`#181 <https://github.com/clearpathrobotics/clearpath_config/issues/181>`_)
+* Contributors: Chris Iverach-Brereton, Roni Kreinin
+
+2.6.3 (2025-08-21)
+------------------
+* Ensure MX_ID is passed through (`#187 <https://github.com/clearpathrobotics/clearpath_config/issues/187>`_)
+* Fix: OAK-D Parameters (`#186 <https://github.com/clearpathrobotics/clearpath_config/issues/186>`_)
+* A200 lidar example requires pacs plate (`#184 <https://github.com/clearpathrobotics/clearpath_config/issues/184>`_)
+* Contributors: Hilary Luo, luis-camero
+
 2.6.2 (2025-07-29)
 ------------------
 * Fix: Overwrite defined values with ROS parameters (`#182 <https://github.com/clearpathrobotics/clearpath_config/issues/182>`_)
