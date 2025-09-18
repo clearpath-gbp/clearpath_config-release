@@ -1,3 +1,26 @@
+## clearpath_config (humble) - 1.3.3-1
+
+The packages in the `clearpath_config` repository were released into the `humble` distro by running `/usr/bin/bloom-release clearpath_config -r humble -t humble` on `Thu, 18 Sep 2025 19:17:55 -0000`
+
+The `clearpath_config` package was released.
+
+Version of package(s) in repository `clearpath_config`:
+
+- upstream repository: https://github.com/clearpathrobotics/clearpath_config.git
+- release repository: https://github.com/clearpath-gbp/clearpath_config-release.git
+- rosdistro version: `1.3.2-1`
+- old version: `1.3.2-1`
+- new version: `1.3.3-1`
+
+Versions of tools used:
+
+- bloom version: `0.13.0`
+- catkin_pkg version: `1.1.0`
+- rosdep version: `0.26.0`
+- rosdistro version: `1.0.1`
+- vcstools version: `0.1.42`
+
+
 ## clearpath_config (jazzy) - 2.7.2-1
 
 The packages in the `clearpath_config` repository were released into the `jazzy` distro by running `/usr/bin/bloom-release clearpath_config -r jazzy -t jazzy` on `Tue, 16 Sep 2025 13:02:34 -0000`
