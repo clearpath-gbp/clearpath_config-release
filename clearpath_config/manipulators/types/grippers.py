@@ -29,8 +29,8 @@ from clearpath_config.manipulators.types.manipulator import BaseManipulator
 
 
 class BaseGripper(BaseManipulator):
-    MANIPULATOR_MODEL = 'base'
-    MANIPULATOR_TYPE = 'gripper'
+    MANIPULATOR_MODEL = "base"
+    MANIPULATOR_TYPE = "gripper"
 
 
 class FrankaGripper(BaseGripper):
@@ -47,77 +47,23 @@ class FrankaGripper(BaseGripper):
 
 
 class Kinova2FLite(BaseGripper):
-    MANIPULATOR_MODEL = 'kinova_2f_lite'
+    MANIPULATOR_MODEL = "kinova_2f_lite"
     JOINT_COUNT = 1
-
-    USE_FAKE_HARDWARE = 'use_fake_hardware'
-    USE_CONTROLLERS = 'use_controllers'
-    FAKE_SENSOR_COMMANDS = 'fake_sensor_commands'
-    SIM_IGNITION = 'sim_ignition'
-    SIM_GAZEBO = 'sim_gazebo'
-    SIM_ISAAC = 'sim_isaac'
-    ISAAC_JOINT_COMMANDS = 'isaac_joint_commands'
-    ISAAC_JOINT_STATES = 'isaac_joint_states'
-    URDF_PARAMETERS = {
-        USE_FAKE_HARDWARE: '',
-        USE_CONTROLLERS: '',
-        FAKE_SENSOR_COMMANDS: '',
-        SIM_IGNITION: '',
-        SIM_GAZEBO: '',
-        SIM_ISAAC: '',
-        ISAAC_JOINT_COMMANDS: '',
-        ISAAC_JOINT_STATES: '',
-    }
 
 
 class Robotiq2F85(BaseGripper):
-    MANIPULATOR_MODEL = 'robotiq_2f_85'
+    MANIPULATOR_MODEL = "robotiq_2f_85"
     JOINT_COUNT = 1
-
-    USE_FAKE_HARDWARE = 'use_fake_hardware'
-    USE_CONTROLLERS = 'use_controllers'
-    FAKE_SENSOR_COMMANDS = 'fake_sensor_commands'
-    SIM_IGNITION = 'sim_ignition'
-    SIM_GAZEBO = 'sim_gazebo'
-    SIM_ISAAC = 'sim_isaac'
-    ISAAC_JOINT_COMMANDS = 'isaac_joint_commands'
-    ISAAC_JOINT_STATES = 'isaac_joint_states'
-    COM_PORT = 'com_port'
     URDF_PARAMETERS = {
-        USE_FAKE_HARDWARE: '',
-        USE_CONTROLLERS: '',
-        FAKE_SENSOR_COMMANDS: '',
-        SIM_IGNITION: '',
-        SIM_GAZEBO: '',
-        SIM_ISAAC: '',
-        ISAAC_JOINT_COMMANDS: '',
-        ISAAC_JOINT_STATES: '',
-        COM_PORT: '',
+        'com_port': ''
     }
 
 
 class Robotiq2F140(BaseGripper):
-    MANIPULATOR_MODEL = 'robotiq_2f_140'
+    MANIPULATOR_MODEL = "robotiq_2f_140"
     JOINT_COUNT = 1
-    USE_FAKE_HARDWARE = 'use_fake_hardware'
-    USE_CONTROLLERS = 'use_controllers'
-    FAKE_SENSOR_COMMANDS = 'fake_sensor_commands'
-    SIM_IGNITION = 'sim_ignition'
-    SIM_GAZEBO = 'sim_gazebo'
-    SIM_ISAAC = 'sim_isaac'
-    ISAAC_JOINT_COMMANDS = 'isaac_joint_commands'
-    ISAAC_JOINT_STATES = 'isaac_joint_states'
-    COM_PORT = 'com_port'
     URDF_PARAMETERS = {
-        USE_FAKE_HARDWARE: '',
-        USE_CONTROLLERS: '',
-        FAKE_SENSOR_COMMANDS: '',
-        SIM_IGNITION: '',
-        SIM_GAZEBO: '',
-        SIM_ISAAC: '',
-        ISAAC_JOINT_COMMANDS: '',
-        ISAAC_JOINT_STATES: '',
-        COM_PORT: '',
+        'com_port': ''
     }
 
 
@@ -136,7 +82,12 @@ class Gripper():
 
     @classmethod
     def assert_model(cls, model: str) -> None:
-        assert model in cls.MODEL, f'Gripper model "{model}" must be one of "{cls.MODEL.keys()}"'
+        assert model in cls.MODEL, (
+            "Gripper model '%s' must be one of: '%s'" % (
+                model,
+                cls.MODEL.keys()
+            )
+        )
 
     def __new__(cls, model: str) -> BaseGripper:
         cls.assert_model(model)

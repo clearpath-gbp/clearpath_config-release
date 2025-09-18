@@ -25,9 +25,9 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
+from typing import MutableMapping
 from functools import reduce
 import operator
-from typing import MutableMapping
 
 
 def _flatten_dict_gen(d, parent_key, dlim):
@@ -94,16 +94,18 @@ def flip_dict(d: MutableMapping, parent_key: str = '', dlim: str = '.'):
     flat = flatten_dict(d, parent_key, dlim)
     flip = {}
     for k, v in flat.items():
-        assert isinstance(v, str), 'Flipping dictionary requires all values to be of type "str"'
+        assert isinstance(v, str), (
+            "Flipping dictionary requires all values to be of type 'str'"
+        )
         flip[v] = k
     return flip
 
 
-def get_from_dict(d, map):  # noqa:A002
+def get_from_dict(d, map):
     return reduce(operator.getitem, map, d)
 
 
-def is_in_dict(d, map):  # noqa:A002
+def is_in_dict(d, map):
     try:
         get_from_dict(d, map)
     except KeyError:
@@ -111,7 +113,7 @@ def is_in_dict(d, map):  # noqa:A002
     return True
 
 
-def set_in_dict(d, map, val):  # noqa:A002
+def set_in_dict(d, map, val):
     for key in map[:-1]:
         d = d.setdefault(key, {})
     d[map[-1]] = val
@@ -119,7 +121,7 @@ def set_in_dict(d, map, val):  # noqa:A002
 
 def extend_dict(a: dict, b: dict):
     for key, value in flatten_dict(b).items():
-        keys = key.split('.')
+        keys = key.split(".")
         set_in_dict(a, keys, value)
     return a
 
@@ -131,7 +133,7 @@ def extend_flat_dict(a: dict, b: dict):
 
 
 def replace_dict_keys(d: dict, replacements: dict):
-    new_d = {}
+    new_d = dict()
     for key, value in flatten_dict(d).items():
         new_key = key
         for r in replacements:
@@ -142,7 +144,7 @@ def replace_dict_keys(d: dict, replacements: dict):
 
 
 def replace_dict_values(d: dict, replacements: dict):
-    new_d = {}
+    new_d = dict()
     for key, value in flatten_dict(d).items():
         for r in replacements:
             new_value = value

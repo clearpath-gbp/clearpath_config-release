@@ -1,7 +1,7 @@
 serial_number: do100-0000
 version: 0
 system:
-  username: robot
+  username: administrator
   hosts:
     - hostname: cpr-do100-0000
       ip: 192.168.131.1
@@ -12,11 +12,6 @@ system:
       implementation: rmw_fastrtps_cpp
     workspaces: []
 platform:
-  drivetrain:
-      control: omni_4wd
-      wheels:
-        front: mecanum
-        rear: mecanum
   controller: ps4
   battery:
     model: TLV1222

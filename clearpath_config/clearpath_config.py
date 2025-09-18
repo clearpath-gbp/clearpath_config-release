@@ -27,12 +27,12 @@
 # POSSIBILITY OF SUCH DAMAGE.
 from clearpath_config.common.types.config import BaseConfig
 from clearpath_config.common.utils.yaml import read_yaml, write_yaml
+from clearpath_config.system.system import SystemConfig
+from clearpath_config.platform.platform import PlatformConfig
 from clearpath_config.links.links import LinksConfig
 from clearpath_config.manipulators.manipulators import ManipulatorConfig
 from clearpath_config.mounts.mounts import MountsConfig
-from clearpath_config.platform.platform import PlatformConfig
 from clearpath_config.sensors.sensors import SensorConfig
-from clearpath_config.system.system import SystemConfig
 
 
 # ClearpathConfig:
@@ -40,14 +40,14 @@ from clearpath_config.system.system import SystemConfig
 #  - contains
 class ClearpathConfig(BaseConfig):
 
-    VERSION = 'version'
-    SERIAL_NUMBER = 'serial_number'
-    SYSTEM = 'system'
-    PLATFORM = 'platform'
-    LINKS = 'links'
-    MANIPULATORS = 'manipulators'
-    MOUNTS = 'mounts'
-    SENSORS = 'sensors'
+    VERSION = "version"
+    SERIAL_NUMBER = "serial_number"
+    SYSTEM = "system"
+    PLATFORM = "platform"
+    LINKS = "links"
+    MANIPULATORS = "manipulators"
+    MOUNTS = "mounts"
+    SENSORS = "sensors"
 
     TEMPLATE = {
         SERIAL_NUMBER: SERIAL_NUMBER,
@@ -63,7 +63,7 @@ class ClearpathConfig(BaseConfig):
     KEYS = TEMPLATE
 
     DEFAULTS = {
-        SERIAL_NUMBER: 'generic',
+        SERIAL_NUMBER: "generic",
         VERSION: 0,
         SYSTEM: SystemConfig.DEFAULTS,
         PLATFORM: PlatformConfig.DEFAULTS,
@@ -77,8 +77,6 @@ class ClearpathConfig(BaseConfig):
         # Read YAML
         if isinstance(config, str):
             config = self.read(config)
-        # Reset the global serial number variable
-        BaseConfig.set_serial_number('generic')
         # Initialization of Sub-Configs
         self._config = {}
         self._system = SystemConfig(self.DEFAULTS[self.SYSTEM])
@@ -103,12 +101,6 @@ class ClearpathConfig(BaseConfig):
         }
         # Set from Config
         super().__init__(setters, config)
-
-        # Sanity validation
-        # Run any additional assertions that depend across fields
-        # e.g. if there's something in system that can conflict with
-        # a setting from platform, it should be checked here
-        self._system.middleware.assert_is_supported_on_platform(self.get_platform_model())
 
     def read(self, file: str | dict) -> None:
         self._file = None
@@ -144,7 +136,9 @@ class ClearpathConfig(BaseConfig):
 
     @version.setter
     def version(self, v: int) -> None:
-        assert isinstance(v, int), 'version must be of type "int"'
+        assert isinstance(v, int), (
+            "version must be of type 'int'"
+        )
         self._version = v
         # Add propagators here
 
