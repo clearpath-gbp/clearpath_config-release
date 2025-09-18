@@ -2,67 +2,256 @@
 Changelog for package clearpath_config
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.3.3 (2025-09-18)
+2.7.3 (2025-09-18)
 ------------------
-* Backport Fix: Ouster URDF Parameters (`#195 <https://github.com/clearpathrobotics/clearpath_config/issues/195>`_)
-  * Base and Cap parameter to Ouster
-  * Add 'cap_type' and 'base_type' in Ouster sample
-* Fix: Lift URDF Parameters (`#194 <https://github.com/clearpathrobotics/clearpath_config/issues/194>`_)
+* Feature: Kinova Jazzy Support (`#193 <https://github.com/clearpathrobotics/clearpath_config/issues/193>`_)
+  * Remove unsupported exception on Kinova
+  * Lint and remove unused imports
+  * Add arm reference from within arm's gripper
 * Contributors: luis-camero
 
-1.3.2 (2025-07-29)
+2.7.2 (2025-09-16)
 ------------------
-* Backport Fix: Overwrite defined values with ROS parameters (`#183 <https://github.com/clearpathrobotics/clearpath_config/issues/183>`_)
+* Fix: URDF Parameters on Kinova and Grippers (`#190 <https://github.com/clearpathrobotics/clearpath_config/issues/190>`_)
+  * Add URDF parameters to Kinova and Grippers
+  * Lint: Add line
+  * Check empty string to allow false boolean
+* Contributors: luis-camero
+
+2.7.1 (2025-09-08)
+------------------
+* Feature: Franka in Jazzy (`#189 <https://github.com/clearpathrobotics/clearpath_config/issues/189>`_)
+  * Forward from Humble: Feature Franka
+  * Initial Franka arm description
+  * Add arm_id property to franka manipulators
+  * Add joint count to Franka arm
+  * Pass MoveIt delay from config
+* Jazzy Feature: Zed (`#188 <https://github.com/clearpathrobotics/clearpath_config/issues/188>`_)
+  * Remove unsupported exception on StereolabsZed
+  * Remove unused imports
+* Contributors: luis-camero
+
+2.7.0 (2025-08-25)
+------------------
+* Drivetrains (`#178 <https://github.com/clearpathrobotics/clearpath_config/issues/178>`_)
+  * Added drivetrain support
+  * Split 2wd into fwd and rwd
+  * Added samples
+  * Renamed drivetrain 'type' to 'control'
+  * Split wheels into front and rear
+  * Added caster wheel
+  * Removed 2WD options for Dingo-O and Ridgeback
+  * Changed J100, A200, W200 to 4WD
+  * Reset the global serial number variable
+  * Fixed A300 sample drivetrain section
+  * Added drivetrain to other platform outline samples
+  * Fixed Dingo-D control type
+  ---------
+  Co-authored-by: Luis Camero <lcamero@clearpathrobotics.com>
+* Add the 2d lidar to the wireless charger (`#181 <https://github.com/clearpathrobotics/clearpath_config/issues/181>`_)
+* Contributors: Chris Iverach-Brereton, Roni Kreinin
+
+2.6.3 (2025-08-21)
+------------------
+* Ensure MX_ID is passed through (`#187 <https://github.com/clearpathrobotics/clearpath_config/issues/187>`_)
+* Fix: OAK-D Parameters (`#186 <https://github.com/clearpathrobotics/clearpath_config/issues/186>`_)
+* A200 lidar example requires pacs plate (`#184 <https://github.com/clearpathrobotics/clearpath_config/issues/184>`_)
+* Contributors: Hilary Luo, luis-camero
+
+2.6.2 (2025-07-29)
+------------------
+* Fix: Overwrite defined values with ROS parameters (`#182 <https://github.com/clearpathrobotics/clearpath_config/issues/182>`_)
   * Overwrite defined values with ROS parameters
   * Remove comment
+* Changed sample username to robot.
+* Contributors: Tony Baltovski, luis-camero
+
+2.6.1 (2025-07-07)
+------------------
+* Forward Fix: Add ur_type parameter to UniversalRobots manipulator (`#177 <https://github.com/clearpathrobotics/clearpath_config/issues/177>`_)
 * Contributors: luis-camero
 
-1.3.1 (2025-07-03)
+2.6.0 (2025-07-04)
 ------------------
-* Add ur_type parameter to UniversalRobots manipulator (`#174 <https://github.com/clearpathrobotics/clearpath_config/issues/174>`_)
-* Contributors: luis-camero
+* Feature: All Platforms Supported (`#176 <https://github.com/clearpathrobotics/clearpath_config/issues/176>`_)
+  * All platforms are now supported
+  * Remove unused dependencies
+* Added sensor sample for phidgets_spatial. (`#175 <https://github.com/clearpathrobotics/clearpath_config/issues/175>`_)
+* Enable foxglove bridge by default (`#173 <https://github.com/clearpathrobotics/clearpath_config/issues/173>`_)
+* Add A300 AMP attachments, samples (`#158 <https://github.com/clearpathrobotics/clearpath_config/issues/158>`_)
+  * Add attachments for A300 Observer
+  * Add A300 Observer sample
+  * Add parameters to set the Ouster OS-1 base & cap type
+  * Add spotlight attachment
+* Contributors: Chris Iverach-Brereton, Hilary Luo, Tony Baltovski, luis-camero
 
-1.3.0 (2025-04-15)
+2.5.0 (2025-05-29)
 ------------------
-* Feature: Add delay to manipulator controller (`#141 <https://github.com/clearpathrobotics/clearpath_config/issues/141>`_)
-* Feature: Manipulator URDF Parameters (`#140 <https://github.com/clearpathrobotics/clearpath_config/issues/140>`_)
+* Fix: PACS Limits (`#171 <https://github.com/clearpathrobotics/clearpath_config/issues/171>`_)
+* Add foxglove bridge enable to platform section (`#169 <https://github.com/clearpathrobotics/clearpath_config/issues/169>`_)
+* Add enable setting for wireless-watcher (`#170 <https://github.com/clearpathrobotics/clearpath_config/issues/170>`_)
+* Feature: CAN Bridge Parameters (`#166 <https://github.com/clearpathrobotics/clearpath_config/issues/166>`_)
+* Add cap_type parameter to the OS1 sample since it's supported (`#163 <https://github.com/clearpathrobotics/clearpath_config/issues/163>`_)
+* Fix/issue typos (`#168 <https://github.com/clearpathrobotics/clearpath_config/issues/168>`_)
+* Contributors: Chris Iverach-Brereton, Hilary Luo, luis-camero
+
+2.4.0 (2025-05-01)
+------------------
+* Keep default can_bridge entries (`#160 <https://github.com/clearpathrobotics/clearpath_config/issues/160>`_)
 * Contributors: Luis Camero
 
-1.2.0 (2025-03-13)
+2.3.1 (2025-04-28)
 ------------------
-* Feature Franka (`#133 <https://github.com/clearpathrobotics/clearpath_config/issues/133>`_)
-* Feature Humble Ouster (`#123 <https://github.com/clearpathrobotics/clearpath_config/issues/123>`_)
-* Feature: MoveIt Parameters and Enable (`#128 <https://github.com/clearpathrobotics/clearpath_config/issues/128>`_)
-* Feature: Manipulator Samples and Poses (`#127 <https://github.com/clearpathrobotics/clearpath_config/issues/127>`_)
-* Feature: Link Material (`#126 <https://github.com/clearpathrobotics/clearpath_config/issues/126>`_)
-* Contributors: Luis Camero
+* Fixed the Husky A300 serial sample to match the real serial.
+* Contributors: Tony Baltovski
 
-1.1.1 (2025-03-06)
+2.3.0 (2025-04-11)
 ------------------
-* Fixed docs link for Robot YAML. (`#125 <https://github.com/clearpathrobotics/clearpath_config/issues/125>`_)
-* Add filter to IMU entry (`#116 <https://github.com/clearpathrobotics/clearpath_config/issues/116>`_)
+* Added a single Hokuyo laser to default R100 sample. (`#157 <https://github.com/clearpathrobotics/clearpath_config/issues/157>`_)
+* Maintain default can adapters but allow overwriting if matching names (`#155 <https://github.com/clearpathrobotics/clearpath_config/issues/155>`_)
+* Feature: Wiferion Charger (`#154 <https://github.com/clearpathrobotics/clearpath_config/issues/154>`_)
+* Feature: Add CAN adapters  (`#153 <https://github.com/clearpathrobotics/clearpath_config/issues/153>`_)
+* Rename camera IMU topics from imu to imu/data_raw (per RPSW-2503) (`#150 <https://github.com/clearpathrobotics/clearpath_config/issues/150>`_)
+* Feature: Add delay to manipulator controller (`#146 <https://github.com/clearpathrobotics/clearpath_config/issues/146>`_)
+* Feature: Manipulator URDF Parameters (`#145 <https://github.com/clearpathrobotics/clearpath_config/issues/145>`_)
+* Feature: MoveIt Parameters and Enable (`#144 <https://github.com/clearpathrobotics/clearpath_config/issues/144>`_)
+* Fast-Forward Feature: Manipulator Samples and Poses (`#143 <https://github.com/clearpathrobotics/clearpath_config/issues/143>`_)
+* Removed J100 from unsupported platforms (`#149 <https://github.com/clearpathrobotics/clearpath_config/issues/149>`_)
+* Changed all sensor samples to the Husky A300. (`#148 <https://github.com/clearpathrobotics/clearpath_config/issues/148>`_)
+* Add support for INS sensors + Fixposition XVN (`#142 <https://github.com/clearpathrobotics/clearpath_config/issues/142>`_)
+* Removed Dingo and Ridgeback from unsupported exception (`#137 <https://github.com/clearpathrobotics/clearpath_config/issues/137>`_)
+* Contributors: Chris Iverach-Brereton, Roni Kreinin, Tony Baltovski, Luis Camero
+
+2.2.2 (2025-03-27)
+------------------
+* Updated the parent link of the base IMU on the A300.
+* Contributors: Tony Baltovski
+
+2.2.1 (2025-03-17)
+------------------
+* Added battery to A300 samples.
+* Contributors: Tony Baltovski
+
+2.2.0 (2025-03-11)
+------------------
+* Feature Jazzy Ouster (`#132 <https://github.com/clearpathrobotics/clearpath_config/issues/132>`_)
+  * Add OusterOS1
+  * Add ouster sample
+  * Alphabetical entries to Lidar3D models
+* Add D455, D456 to supported devices (`#136 <https://github.com/clearpathrobotics/clearpath_config/issues/136>`_)
+* Add support for OAK-D Pro W PoE (`#135 <https://github.com/clearpathrobotics/clearpath_config/issues/135>`_)
+  * Add OAK-D Pro W PoE to sensor types. Add IP address field to OAK-D camera class, defaulting to None (for non-PoE models). Add a new assertion to validate IPv4 addresses
+  * Support the `device_type` parameter for OAK-D cameras
+  * Add i_mx_id, i_ip for identifying multiple cameras. Fix serial so it maps to i_usb_port_id
+  * Rename variable to avoid overwriting python builtin
+  * Allow empty strings as well as None for the IP address
+  * Add assert_is_ipv4_address to BaseSensor
+* Add URDF-only support for the Seyond Robin W (`#131 <https://github.com/clearpathrobotics/clearpath_config/issues/131>`_)
+  * Add the SeyondLidar class
+  * Add sample for the Seyond Robin W
+* Contributors: Chris Iverach-Brereton, luis-camero
+
+2.1.1 (2025-02-05)
+------------------
+* Fixed docs link for Robot YAML. (`#124 <https://github.com/clearpathrobotics/clearpath_config/issues/124>`_)
+* Updated the A300's default IMU location.
+* Contributors: Tony Baltovski
+
+2.1.0 (2025-01-31)
+------------------
+* Jazzy Phidgets IMU Filter (`#119 <https://github.com/clearpathrobotics/clearpath_config/issues/119>`_)
   * Add filter to IMU entry
   * Enable mag only for Phidgets
   * Add DATA topic to Phidget
-* Contributors: Tony Baltovski, luis-camero
-
-1.1.0 (2025-01-15)
-------------------
-* Added Ewellix Lift (`#109 <https://github.com/clearpathrobotics/clearpath_config/issues/109>`_)
+* Add the phidget to default sample (`#120 <https://github.com/clearpathrobotics/clearpath_config/issues/120>`_)
+* Change default user to robot (`#121 <https://github.com/clearpathrobotics/clearpath_config/issues/121>`_)
+* Feature/diagnostics (`#117 <https://github.com/clearpathrobotics/clearpath_config/issues/117>`_)
+  * Switched class (shared) variables to non-muteable types to prevent unexpected behaviour if they were ever changed
+  * Remove redundant getters and setters
+  * Remove duplicate variable definition
+  * Add topic message type and correct rates so they are not shared muteable variables
+* Ewellix Lift (`#115 <https://github.com/clearpathrobotics/clearpath_config/issues/115>`_)
+  * Added Ewellix Lift (`#109 <https://github.com/clearpathrobotics/clearpath_config/issues/109>`_)
   * Initial add of lifts to config
   * Added ewellix parameters
-* Add HE2411 battery support (`#110 <https://github.com/clearpathrobotics/clearpath_config/issues/110>`_)
-  * Add support for the HE2411 battery to J100 and A200
-  * Add the even-older HE2410 too
-* Cherry-pick `enable_ekf` support from Jazzy (`#108 <https://github.com/clearpathrobotics/clearpath_config/issues/108>`_)
-* Fix support for the device_type parameter; previously the camera would always be a Q62 (`#99 <https://github.com/clearpathrobotics/clearpath_config/issues/99>`_) (`#101 <https://github.com/clearpathrobotics/clearpath_config/issues/101>`_)
-* Contributors: Chris Iverach-Brereton, luis-camero
+  * Fix lint
+* Removed deprecated parameters
+* Contributors: Hilary Luo, Luis Camero
 
-1.0.0 (2024-11-25)
+2.0.1 (2025-01-16)
 ------------------
+* Add Zenoh support (`#113 <https://github.com/clearpathrobotics/clearpath_config/issues/113>`_)
+  * Add Zenoh to the list of supported RMW implementations
+  * Add zenoh_router_config_uri parameter to middleware config
+  * Add a sanity check to make sure we aren't trying to use Zenoh on a MicroROS-using platform
+  * Allow Zenoh on generic platforms
+* Contributors: Chris Iverach-Brereton
+
+2.0.0 (2025-01-14)
+------------------
+* Add HE2410 & HE2411 battery support (`#110 <https://github.com/clearpathrobotics/clearpath_config/issues/110>`_) (`#111 <https://github.com/clearpathrobotics/clearpath_config/issues/111>`_)
+  * Add support for the HE2410 and HE2411 batteries to J100 and A200
+* Fixed tests.
+* Add additional controllers (`#105 <https://github.com/clearpathrobotics/clearpath_config/issues/105>`_)
+  * Add Xbox controller support
+  * Add PS5 controller support
+* Add enable_ekf property to platform (`#106 <https://github.com/clearpathrobotics/clearpath_config/issues/106>`_)
+* Re-add the A200/A201 Observer sample now that https://github.com/clearpathrobotics/clearpath_common/pull/122 is merged (`#107 <https://github.com/clearpathrobotics/clearpath_config/issues/107>`_)
+* Fix failing tests (`#104 <https://github.com/clearpathrobotics/clearpath_config/issues/104>`_)
+  * Remove the husky observer sample; it depends on as-yet-unmerged changes to clearpath_common
+  * Flag the Zed camera as unsupported for now
+  * Skip any additional tests if there's an unsupported platform or accessory in the sample
+* Fix the Axis camera topics (`#100 <https://github.com/clearpathrobotics/clearpath_config/issues/100>`_)
+* Raise an UnsupportedPlatformException for the Jackal (for now); we don't have Jazzy firmware for it yet (`#103 <https://github.com/clearpathrobotics/clearpath_config/issues/103>`_)
+* A300 VCAN (`#102 <https://github.com/clearpathrobotics/clearpath_config/issues/102>`_)
+  * A300 vcan0 bridge
+  * Disable vcan1 bridge for now
+* Fix support for the device_type parameter; previously the camera would always be a Q62 (`#99 <https://github.com/clearpathrobotics/clearpath_config/issues/99>`_)
+* Add the A200 Observer backpack attachment (`#96 <https://github.com/clearpathrobotics/clearpath_config/issues/96>`_)
+  * Add the A200 Observer backpack attachment
+  * Add the Husky Observer sample
+  * Add the IMU to the sample
+  * Add source CI
+  * Linting for new CI
+  * More linting
+  * Silently replace the A201 prefix with A200; this lets us support the Observer with minimal changes elsewhere (and the number of A201 bases is very small)
+  * Update the Observer sample to use the A201 serial numbers
+* Add A300 samples (`#98 <https://github.com/clearpathrobotics/clearpath_config/issues/98>`_)
+  * Add the AMP mount attachment
+  * Add A300 samples
+  * Add the outline sample
+  * Add AMP frame to sample
+* Bugfix MODEL.keys() (`#97 <https://github.com/clearpathrobotics/clearpath_config/issues/97>`_)
+* A300 battery comment to LiFEPO4
+* Fix all linting errors
+* Add a300 extra ros parameters
+* Add a300 to attachment mux
+* Add a300 platform empty ros parameters
+* Add a300 can interfaces
+* Add a300 platform battery
+* Add a300 platform attachments
+* Add A300 platform entry
+* Add the ability to flag previously-supported accessories & platforms as not (currently) supported (`#86 <https://github.com/clearpathrobotics/clearpath_config/issues/86>`_)
+  * Add initial support for flagging unsupported accessories (e.g. Kinova arms, whose binary drivers don't exist in Jazzy yet)
+  * classmethod -> staticmethod
+  * Use the ROS_DISTRO variable from clearpath_generator_common instead of hard-coding the distro
+  * Start fixing up python linter errors, code formatting, replace % strings with f'' strings.
+  * Finish first-pass replacing " -> '
+  * Fix remaining linter errors. Some tests are still failing, but the major code tidying-up should be done now
+  * Fix type -> _type
+  * Update CI for Jazy
+  * Update Python package workflow for Jazzy
+  * Remove dependency on clearpath_generator_common; doing so creates a circular dependency. Instead use the system level envar
+  * Add the ability to flag whole platforms as deprecated and/or unsupported
+  * Docs
+  * Fix imperative tone, missing periods in docstrings, missing newline at end of file
+  * Mark everything besides Jackal and Husky as presently unsupported
+  * Fix up sample yaml formatting. Remove unmatched quotation marks, restructure to avoid `foo.bar.spam: eggs` notation
+  * Fix quotation marks for the sample serial number
 * Add default vcan ROS interfaces based on platform
 * Add support for Axis cameras (`#90 <https://github.com/clearpathrobotics/clearpath_config/issues/90>`_)
   * Add the initial AxisCamera class with all ROS parameters defined in axis_camera's launch files & nodes
+  * Remove duplicate argument
   * Add the AxisCamera class to the sensors generator
   * Add the serial to the axis camera's template
   * Add serial to the template keys too
@@ -78,13 +267,62 @@ Changelog for package clearpath_config
   * Add the remaining camera topics to the Topics object
   * image_raw -> image
   * Add axis_camera sample
-* Remove empty line at EoF
+  * Linting fixes
+  * End docstring with `.`
 * Add ur_arm
+* Add a sample for each sensor
+* Add default vcan ROS interfaces based on platform
+* Add support for Axis cameras (`#90 <https://github.com/clearpathrobotics/clearpath_config/issues/90>`_)
+  * Add the initial AxisCamera class with all ROS parameters defined in axis_camera's launch files & nodes
+  * Remove duplicate argument
+  * Add the AxisCamera class to the sensors generator
+  * Add the serial to the axis camera's template
+  * Add serial to the template keys too
+  * Add serial getter/setter. Use empty string as default serial
+  * Refactoring, set the property to the value for the template
+  * frame_width -> width, frame_height -> height
+  * Rename setter
+  * Make the scales & offsets floats by default
+  * Add the TF prefix parameter
+  * Add the camera_info_url parameter
+  * camera_num -> camera
+  * Note that the serial isn't used, fix the name of the PTZ teleop parameter
+  * Add the remaining camera topics to the Topics object
+  * image_raw -> image
+  * Add axis_camera sample
+  * Linting fixes
+  * End docstring with `.`
+* Remove empty line at EoF
 * Add header
 * rx and tx topics for can bridge
 * Initial can_bridges add
+* Add ur_arm
 * Add a sample for each sensor
-* Contributors: Chris Iverach-Brereton, Luis Camero
+* Add the ability to flag previously-supported accessories & platforms as not (currently) supported (`#86 <https://github.com/clearpathrobotics/clearpath_config/issues/86>`_)
+  * Add initial support for flagging unsupported accessories (e.g. Kinova arms, whose binary drivers don't exist in Jazzy yet)
+  * classmethod -> staticmethod
+  * Use the ROS_DISTRO variable from clearpath_generator_common instead of hard-coding the distro
+  * Start fixing up python linter errors, code formatting, replace % strings with f'' strings.
+  * Finish first-pass replacing " -> '
+  * Fix remaining linter errors. Some tests are still failing, but the major code tidying-up should be done now
+  * Fix type -> _type
+  * Update CI for Jazy
+  * Update Python package workflow for Jazzy
+  * Remove dependency on clearpath_generator_common; doing so creates a circular dependency. Instead use the system level envar
+  * Add the ability to flag whole platforms as deprecated and/or unsupported
+  * Docs
+  * Fix imperative tone, missing periods in docstrings, missing newline at end of file
+  * Mark everything besides Jackal and Husky as presently unsupported
+  * Fix up sample yaml formatting. Remove unmatched quotation marks, restructure to avoid `foo.bar.spam: eggs` notation
+  * Fix quotation marks for the sample serial number
+* Removed line at EOF
+* Add header
+* Merge pull request `#82 <https://github.com/clearpathrobotics/clearpath_config/issues/82>`_ from clearpathrobotics/lcamero/phidgets_spatial
+  Add phidgets spatial to config
+* Add OAKD
+* rx and tx topics for can bridge
+* Initial can_bridges add
+* Contributors: Chris Iverach-Brereton, Luis Camero, Roni Kreinin, Tony Baltovski, Yoan Mollard
 
 0.3.4 (2024-10-04)
 ------------------

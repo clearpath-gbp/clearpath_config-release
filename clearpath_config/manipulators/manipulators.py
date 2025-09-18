@@ -35,8 +35,8 @@ from clearpath_config.manipulators.types.arms import (
     BaseArm,
 )
 from clearpath_config.manipulators.types.lifts import (
+    BaseLift,
     Lift,
-    BaseLift
 )
 from clearpath_config.manipulators.types.manipulator import BaseManipulator
 
@@ -103,12 +103,15 @@ class MoveItConfig(BaseConfig):
     def from_dict(self, d: dict) -> None:
         if self.ENABLE in d:
             self.enable = d[self.ENABLE]
+        if self.DELAY in d:
+            self.delay = d[self.DELAY]
         if self.ROS_PARAMETERS in d:
             self.ros_parameters = d[self.ROS_PARAMETERS]
 
     def to_dict(self) -> dict:
         return {
             self.ENABLE: self.enable,
+            self.DELAY: self.delay,
             self.ROS_PARAMETERS: self.ros_parameters
         }
 
@@ -127,9 +130,9 @@ class ManipulatorListConfig(OrderedListConfig[BaseManipulator]):
 
 class ManipulatorConfig(BaseConfig):
     MOVEIT = 'moveit'
-    MANIPULATORS = "manipulators"
-    ARMS = "arms"
-    LIFTS = "lifts"
+    MANIPULATORS = 'manipulators'
+    ARMS = 'arms'
+    LIFTS = 'lifts'
     TEMPLATE = {
         MANIPULATORS: {
             MOVEIT: MOVEIT,
@@ -186,10 +189,8 @@ class ManipulatorConfig(BaseConfig):
 
     @arms.setter
     def arms(self, value: List[dict]) -> None:
-        assert isinstance(value, list), (
-            "Manipulators must be list of 'dict'")
-        assert all([isinstance(i, dict) for i in value]), (
-            "Manipulators must be list of 'dict'")
+        assert isinstance(value, list), 'Manipulators must be of type "dict"'
+        assert all([isinstance(i, dict) for i in value]), 'Manipulators must be of type "dict"'  # noqa:C419, E501
         arms_list = []
         for d in value:
             arm = Arm(d['model'])
@@ -209,7 +210,7 @@ class ManipulatorConfig(BaseConfig):
     def lifts(self, value: List[dict]) -> None:
         assert isinstance(value, list), (
             "Manipulators must be list of 'dict'")
-        assert all([isinstance(i, dict) for i in value]), (
+        assert all(isinstance(i, dict) for i in value), (
             "Manipulators must be list of 'dict'")
         lifts_list = []
         for d in value:

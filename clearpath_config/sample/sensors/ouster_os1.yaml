@@ -1,4 +1,4 @@
-serial_number: a200-0000
+serial_number: a300-0000
 version: 0
 sensors:
   lidar3d:
@@ -16,5 +16,4 @@ sensors:
           imu_port: 7503
           proc_mask: IMU|PCL|SCAN|IMG|RAW|TLM
           use_system_default_qos: false
-          cap_type: halo  # either 'halo' or 'fins'
-          base_type: base # either 'base' or 'none'
+          cap_type: halo  # either halo or fins

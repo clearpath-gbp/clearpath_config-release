@@ -30,8 +30,8 @@ from clearpath_config.common.types.file import File
 
 
 class PackagePath:
-    PACKAGE = "package"
-    PATH = "path"
+    PACKAGE = 'package'
+    PATH = 'path'
 
     def __init__(
             self,
