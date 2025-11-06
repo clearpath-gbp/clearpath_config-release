@@ -2,6 +2,12 @@
 Changelog for package clearpath_config
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.8.1 (2025-11-06)
+------------------
+* Fix: Ewellix Parameters (`#203 <https://github.com/clearpathrobotics/clearpath_config/issues/203>`_)
+  Add mount parameter and remove redefinition of urdf functions
+* Contributors: luis-camero
+
 2.8.0 (2025-10-23)
 ------------------
 * Add a new `platform.wireless` section to config (`#201 <https://github.com/clearpathrobotics/clearpath_config/issues/201>`_)
