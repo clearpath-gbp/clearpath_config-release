@@ -6,7 +6,3 @@ system:
       ip: 192.168.131.1
   ros2:
     namespace: dd150_0000
-platform:
-  controller: ps4
-  mcu:
-    protocol: proton

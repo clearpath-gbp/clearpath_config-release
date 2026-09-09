@@ -25,14 +25,13 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-from typing import List
-
 from clearpath_config.common.types.accessory import Accessory
 from clearpath_config.links.types.link import BaseLink
+from typing import List
 
 
 class Sphere(BaseLink):
-    LINK_TYPE = 'sphere'
+    LINK_TYPE = "sphere"
     RADIUS = 0.01
 
     def __init__(
@@ -67,11 +66,9 @@ class Sphere(BaseLink):
             self.set_radius(d['radius'])
 
     def set_radius(self, radius: float) -> None:
-        msg = f'Radius {radius} must be a positive float value'
-        if not isinstance(radius, float):
-            raise TypeError(msg)
-        if radius < 0.0:
-            raise ValueError(msg)
+        msg = "Radius must be a positive float value"
+        assert isinstance(radius, float), msg
+        assert radius >= 0.0, msg
         self.radius = radius
 
     def get_radius(self) -> float:

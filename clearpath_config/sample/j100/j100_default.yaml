@@ -7,12 +7,9 @@ system:
   ros2:
     namespace: j100_0000
 platform:
-  controller: ps4
   attachments:
     - name: front_fender
       type: j100.fender
     - name: rear_fender
       type: j100.fender
       rpy: [0.0, 0.0, 3.1415]
-  mcu:
-    protocol: proton

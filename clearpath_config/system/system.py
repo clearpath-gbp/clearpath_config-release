@@ -35,24 +35,22 @@ from clearpath_config.common.types.hostname import Hostname
 from clearpath_config.common.types.namespace import Namespace
 from clearpath_config.common.types.username import Username
 from clearpath_config.common.utils.dictionary import flip_dict
-from clearpath_config.system.bash import BashConfig
 from clearpath_config.system.hosts import HostConfig, HostListConfig
 from clearpath_config.system.middleware import MiddlewareConfig
 
 
 class SystemConfig(BaseConfig):
 
-    SYSTEM = 'system'
-    HOSTS = 'hosts'
-    LOCALHOST = 'localhost'
-    SELF = 'self'
-    ROS2 = 'ros2'
-    USERNAME = 'username'
-    NAMESPACE = 'namespace'
-    DOMAIN_ID = 'domain_id'
+    SYSTEM = "system"
+    HOSTS = "hosts"
+    LOCALHOST = "localhost"
+    SELF = "self"
+    ROS2 = "ros2"
+    USERNAME = "username"
+    NAMESPACE = "namespace"
+    DOMAIN_ID = "domain_id"
     MIDDLEWARE = MiddlewareConfig.MIDDLEWARE
-    WORKSPACES = 'workspaces'
-    BASH = 'bash'
+    WORKSPACES = "workspaces"
 
     TEMPLATE = {
         SYSTEM: {
@@ -65,8 +63,7 @@ class SystemConfig(BaseConfig):
                 DOMAIN_ID: DOMAIN_ID,
                 MIDDLEWARE: MIDDLEWARE,
                 WORKSPACES: WORKSPACES
-            },
-            BASH: BASH,
+            }
         }
     }
 
@@ -77,8 +74,8 @@ class SystemConfig(BaseConfig):
         HOSTS: HostListConfig.DEFAULTS,
         # LOCALHOST: hostname for the specific devices - automatically determined
         LOCALHOST: socket.gethostname(),
-        # USERNAME: robot
-        USERNAME: 'robot',
+        # USERNAME: administrator
+        USERNAME: "administrator",
         # NAMESPACE: serial number
         NAMESPACE: Namespace.clean(BaseConfig.get_serial_number(prefix=True)),
         # DOMAIN_ID: 0
@@ -86,9 +83,7 @@ class SystemConfig(BaseConfig):
         # Discovery Server Disabled
         MIDDLEWARE: MiddlewareConfig.DEFAULTS,
         # Workpaces: empty list
-        WORKSPACES: [],
-        # additional bash environment
-        BASH: BashConfig.DEFAULTS,
+        WORKSPACES: []
     }
 
     def __init__(
@@ -100,8 +95,7 @@ class SystemConfig(BaseConfig):
             namespace: str | Namespace = DEFAULTS[NAMESPACE],
             domain_id: int | DomainID = DEFAULTS[DOMAIN_ID],
             middleware: dict | MiddlewareConfig = DEFAULTS[MIDDLEWARE],
-            workspaces: list = DEFAULTS[WORKSPACES],
-            bash: dict | BashConfig = DEFAULTS[BASH],
+            workspaces: list = DEFAULTS[WORKSPACES]
             ) -> None:
         # Initialization
         self._config = {}
@@ -112,7 +106,6 @@ class SystemConfig(BaseConfig):
         self.domain_id = domain_id
         self.middleware = middleware
         self.workspaces = workspaces
-        self.bash = bash
         # Setter Template
         setters = {
             self.KEYS[self.HOSTS]: SystemConfig.hosts,
@@ -122,7 +115,6 @@ class SystemConfig(BaseConfig):
             self.KEYS[self.DOMAIN_ID]: SystemConfig.domain_id,
             self.KEYS[self.MIDDLEWARE]: SystemConfig.middleware,
             self.KEYS[self.WORKSPACES]: SystemConfig.workspaces,
-            self.KEYS[self.BASH]: SystemConfig.bash,
         }
         # Set from Config
         super().__init__(setters, config, self.SYSTEM)
@@ -155,28 +147,29 @@ class SystemConfig(BaseConfig):
         host_list = []
         if isinstance(value, list):
             for d in value:
-                if not isinstance(d, dict):
-                    raise TypeError(f'Host value of {d} is invalid, it must be of type "dict"')
+                assert isinstance(d, dict), (
+                    f"Host value of {d} is invalid, it must be of type 'dict'"
+                )
                 host_list.append(HostConfig(config=d))
 
             for host in host_list:
                 # Ensure no duplicate hostname or IP
                 count = sum(((host.ip_address == h.ip_address) or (host.hostname == h.hostname))
                             for h in host_list)
-                if count != 1:
-                    raise ValueError(
-                        f'Host {host} conflicts with another host. Each hostname and ip must be unique.'  # noqa: E501
-                    )
+                assert count == 1, (
+                    f"Host {host} conflicts with another host. " +
+                    "Each hostname and ip must be unique."
+                )
 
             self._hosts = HostListConfig()
             self._hosts.set_all(host_list)
         elif isinstance(value, HostListConfig):
             self._hosts = value
         else:
-            if not (isinstance(value, list) or isinstance(value, HostConfig)):
-                raise TypeError(
-                    f'Hosts value of {value} is invalid, it must be of type "List[dict]" or "HostListConfig"'  # noqa: E501
-                )
+            assert isinstance(value, list) or isinstance(value, HostConfig), (
+                f"Hosts value of {value} is invalid, " +
+                "it must be of type 'List[dict]' or 'HostListConfig'"
+            )
 
     @property
     def localhost(self) -> str:
@@ -188,10 +181,9 @@ class SystemConfig(BaseConfig):
 
     @localhost.setter
     def localhost(self, value: str | Hostname) -> None:
-        if not (isinstance(value, str) or isinstance(value, Hostname)):
-            raise TypeError(
-                f'Localhost of {value} is invalid, must be of type "str" or "Hostname"'
-            )
+        assert isinstance(value, str) or isinstance(value, Hostname), (
+            f"Localhost of {value} is invalid, must be of type 'str' or 'Hostname'"
+        )
         if isinstance(value, str):
             self._localhost = Hostname(value)
         elif isinstance(value, Hostname):
@@ -212,8 +204,9 @@ class SystemConfig(BaseConfig):
         elif isinstance(value, Username):
             self._username = value
         else:
-            if not (isinstance(value, str) or isinstance(value, Username)):
-                raise TypeError(f'Username {value} must be of type "str" or "Username"')
+            assert isinstance(value, str) or isinstance(value, Username), (
+                "Username must be of type 'str' or 'Username'"
+            )
 
     @property
     def namespace(self) -> str:
@@ -242,8 +235,9 @@ class SystemConfig(BaseConfig):
         elif isinstance(value, DomainID):
             self._domain_id = value
         else:
-            if not (isinstance(value, int) or isinstance(value, DomainID)):
-                raise TypeError(f'Domain ID {value} must be of type "int" or "DomainID"')
+            assert isinstance(value, int) or isinstance(value, DomainID), (
+                "Domain ID must be of type 'int' or 'DomainID'"
+            )
 
     @property
     def middleware(self) -> MiddlewareConfig:
@@ -262,10 +256,10 @@ class SystemConfig(BaseConfig):
         elif isinstance(value, MiddlewareConfig):
             self._middleware = value
         else:
-            if not (isinstance(value, dict) or isinstance(value, MiddlewareConfig)):
-                raise TypeError(
-                    f'Middleware configuration {value} must be of type "dict" or "MiddlewareConfig"'  # noqa: E501
-                )
+            assert isinstance(value, dict) or (
+                isinstance(value, MiddlewareConfig)), (
+                "Middleware configuration must be of type 'dict' or 'MiddlewareConfig'"
+            )
 
     @property
     def workspaces(self) -> list:
@@ -273,28 +267,8 @@ class SystemConfig(BaseConfig):
 
     @workspaces.setter
     def workspaces(self, value: list) -> None:
-        if not isinstance(value, list):
-            raise TypeError(f'Workspaces {value} must be "list" of "str"')
-        for i in value:
-            if not isinstance(i, str):
-                raise TypeError(f'Workspace {i} must be of type "str"')
+        assert isinstance(value, list), (
+            "Workspaces must be 'list' of 'str'")
+        assert all([isinstance(i, str) for i in value]), (
+            "Workspaces must be 'list' of 'str'")
         self._workspaces = value
-
-    @property
-    def bash(self) -> BashConfig:
-        return self._bash
-
-    @bash.setter
-    def bash(self, bash: dict | BashConfig) -> None:
-        if isinstance(bash, dict):
-            self._bash = BashConfig(
-                source=bash.get('source', []),
-                env=bash.get('env', {}),
-            )
-        elif isinstance(bash, BashConfig):
-            self._bash = bash
-        else:
-            if not (isinstance(bash, dict) or isinstance(bash, BashConfig)):
-                raise TypeError(
-                    f'Bash configuration {bash} must be of type "dict" or "BashConfig"'
-                )

@@ -25,38 +25,43 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-from typing import List
-
 from clearpath_config.common.types.config import BaseConfig
 from clearpath_config.common.types.list import OrderedListConfig
 from clearpath_config.common.utils.dictionary import flip_dict
-from clearpath_config.mounts.types.disk import Disk
 from clearpath_config.mounts.types.fath_pivot import FathPivot
+from clearpath_config.mounts.types.flir_ptu import FlirPTU
 from clearpath_config.mounts.types.mount import BaseMount
 from clearpath_config.mounts.types.pacs import PACS
 from clearpath_config.mounts.types.post import Post
 from clearpath_config.mounts.types.sick import SICKStand
+from clearpath_config.mounts.types.disk import Disk
+from typing import List
 
 
 class Mount():
     FATH_PIVOT = FathPivot.MOUNT_MODEL
+    FLIR_PTU = FlirPTU.MOUNT_MODEL
     PACS_RISER = PACS.Riser.MOUNT_MODEL
     PACS_BRACKET = PACS.Bracket.MOUNT_MODEL
 
     MODEL = {
         FATH_PIVOT: FathPivot,
+        FLIR_PTU: FlirPTU,
         PACS_RISER: PACS.Riser,
         PACS_BRACKET: PACS.Bracket
     }
 
     def __new__(cls, model: str) -> BaseMount:
-        if model not in Mount.MODEL:
-            raise ValueError(f'Model "{model}" must be one of "{Mount.MODEL.keys()}"')
+        assert model in Mount.MODEL, (
+            "Model '%s' must be one of: '%s'" % (
+                model,
+                Mount.MODEL.keys()
+            )
+        )
         return Mount.MODEL[model]()
 
 
 class MountListConfig(OrderedListConfig[BaseMount]):
-
     def __init__(self) -> None:
         super().__init__(obj_type=BaseMount)
 
@@ -69,7 +74,7 @@ class MountListConfig(OrderedListConfig[BaseMount]):
 
 class MountsConfig(BaseConfig):
 
-    MOUNTS = 'mounts'
+    MOUNTS = "mounts"
     BRACKET = PACS.Bracket.MOUNT_MODEL
     FATH_PIVOT = FathPivot.MOUNT_MODEL
     RISER = PACS.Riser.MOUNT_MODEL
@@ -137,11 +142,10 @@ class MountsConfig(BaseConfig):
 
     @bracket.setter
     def bracket(self, value: List[dict]) -> None:
-        if not isinstance(value, list):
-            raise TypeError(f'Brackets must be list of type "dict". Got {value}')
-        for i in value:
-            if not isinstance(i, dict):
-                raise TypeError(f'Bracket {i} must be of type "dict"')
+        assert isinstance(value, list), (
+            "Mounts must be list of 'dict'")
+        assert all([isinstance(i, dict) for i in value]), (
+            "Mounts must be list of 'dict'")
         mounts = MountListConfig()
         mount_list = []
         for d in value:
@@ -161,11 +165,10 @@ class MountsConfig(BaseConfig):
 
     @riser.setter
     def riser(self, value: List[dict]) -> None:
-        if not isinstance(value, list):
-            raise TypeError(f'Risers must be list of "dict". Got {value}')
-        for i in value:
-            if not isinstance(i, dict):
-                raise TypeError(f'Riser {i} must be of type "dict".')
+        assert isinstance(value, list), (
+            "Mounts must be list of 'dict'")
+        assert all([isinstance(i, dict) for i in value]), (
+            "Mounts must be list of 'dict'")
         mounts = MountListConfig()
         mount_list = []
         for d in value:
@@ -185,11 +188,10 @@ class MountsConfig(BaseConfig):
 
     @fath_pivot.setter
     def fath_pivot(self, value: List[dict]) -> None:
-        if not isinstance(value, list):
-            raise TypeError(f'Fath pivot mounts must be list of "dict". Got {value}')
-        for i in value:
-            if not isinstance(i, dict):
-                raise TypeError(f'Fath pivot mount {i} must be of type "dict"')
+        assert isinstance(value, list), (
+            "Mounts must be list of 'dict'")
+        assert all([isinstance(i, dict) for i in value]), (
+            "Mounts must be list of 'dict'")
         mounts = MountListConfig()
         mount_list = []
         for d in value:
@@ -209,11 +211,10 @@ class MountsConfig(BaseConfig):
 
     @sick_stand.setter
     def sick_stand(self, value: List[dict]) -> None:
-        if not isinstance(value, list):
-            raise TypeError(f'Sick stands must be list of "dict". Got {value}')
-        for i in value:
-            if not isinstance(i, dict):
-                raise TypeError('Sick stand {i} must be of type "dict"')
+        assert isinstance(value, list), (
+            "Mounts must be list of 'dict'")
+        assert all([isinstance(i, dict) for i in value]), (
+            "Mounts must be list of 'dict'")
         mounts = MountListConfig()
         mount_list = []
         for d in value:
@@ -233,11 +234,10 @@ class MountsConfig(BaseConfig):
 
     @post.setter
     def post(self, value: List[dict]) -> None:
-        if not isinstance(value, list):
-            raise TypeError(f'Posts must be list of "dict". Got {value}')
-        for i in value:
-            if not isinstance(i, dict):
-                raise TypeError(f'Post {i} must be of type "dict"')
+        assert isinstance(value, list), (
+            "Mounts must be list of 'dict'")
+        assert all([isinstance(i, dict) for i in value]), (
+            "Mounts must be list of 'dict'")
         mounts = MountListConfig()
         mount_list = []
         for d in value:
@@ -257,11 +257,10 @@ class MountsConfig(BaseConfig):
 
     @disk.setter
     def disk(self, value: List[dict]) -> None:
-        if not isinstance(value, list):
-            raise TypeError(f'Disks must be list of "dict". Got {value}')
-        for i in value:
-            if not isinstance(i, dict):
-                raise TypeError(f'Disk {i} must be of type "dict"')
+        assert isinstance(value, list), (
+            "Mounts must be list of 'dict'")
+        assert all([isinstance(i, dict) for i in value]), (
+            "Mounts must be list of 'dict'")
         mounts = MountListConfig()
         mount_list = []
         for d in value:

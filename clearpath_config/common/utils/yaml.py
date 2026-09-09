@@ -26,10 +26,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 import os
-
 import yaml
-from yaml.constructor import ConstructorError
-from yaml.scanner import ScannerError
 
 
 # Get Valid Path
@@ -52,25 +49,30 @@ def find_valid_path(path, cwd=None):
 def read_yaml(path: str) -> dict:
     orig = path
     # Check YAML Path
-    path = find_valid_path(path, os.getcwd())
-    if not path:
-        raise FileNotFoundError(f'YAML file {orig} could not be found')
+    try:
+        path = find_valid_path(path, os.getcwd())
+        assert path, "YAML file '%s' could not be found" % orig
+    except FileNotFoundError:
+        raise AssertionError(
+            "YAML file '%s' could not be found" % orig)
     # Check YAML can be Opened
     try:
         config = yaml.load(open(path), Loader=yaml.SafeLoader)
-    except ScannerError:
-        raise ScannerError(f'YAML file {orig} is not well-formed')
-    except ConstructorError:
-        raise ConstructorError(f'YAML file "{orig}" is attempting to create unsafe objects')
+    except yaml.scanner.ScannerError:
+        raise AssertionError(
+            "YAML file '%s' is not well formed" % orig)
+    except yaml.constructor.ConstructorError:
+        raise AssertionError(
+            "YAML file '%s' is attempting to create unsafe objects" % (
+                orig))
     # Check contents are a Dictionary
-    if not isinstance(config, dict):
-        raise TypeError(f'YAML file "{orig}" is not a dictionary')
+    assert isinstance(config, dict), (
+        "YAML file '%s' is not a dictionary" % orig)
     return config
 
 
 def write_yaml(path: str, config: dict) -> None:
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    yaml_file = open(path, 'w+')
+    yaml_file = open(path, "w+")
     yaml.Dumper.ignore_aliases = lambda *args: True
     yaml.dump(
         config,

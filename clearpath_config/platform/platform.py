@@ -25,23 +25,20 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
+from clearpath_config.common.types.platform import Platform
 from clearpath_config.common.types.config import BaseConfig
 from clearpath_config.common.types.package_path import PackagePath
-from clearpath_config.common.types.platform import Platform
 from clearpath_config.common.utils.dictionary import flip_dict
+from clearpath_config.platform.battery import BatteryConfig
+from clearpath_config.platform.extras import ExtrasConfig
 from clearpath_config.platform.attachments.config import AttachmentsConfig
 from clearpath_config.platform.attachments.mux import AttachmentsConfigMux
-from clearpath_config.platform.battery import BatteryConfig
-from clearpath_config.platform.can import CANAdapterConfig, CANBridgeConfig
-from clearpath_config.platform.drivetrain import DrivetrainConfig
-from clearpath_config.platform.extras import ExtrasConfig
-from clearpath_config.platform.mcu import MCUConfig
-from clearpath_config.platform.wireless import WirelessConfig
+from clearpath_config.platform.can import CANBridgeConfig
 
 
 class DescriptionPackagePath(PackagePath):
-    MACRO = 'macro'
-    PARAMETERS = 'parameters'
+    MACRO = "macro"
+    PARAMETERS = "parameters"
 
     def __init__(
             self,
@@ -86,71 +83,40 @@ class DescriptionPackagePath(PackagePath):
 
 class PlatformConfig(BaseConfig):
 
-    PLATFORM = 'platform'
+    PLATFORM = "platform"
 
     # Controllers
-    PS4 = 'ps4'
-    PS5 = 'ps5'
-    LOGITECH = 'logitech'
-    XBOX = 'xbox'
-    FORT_VSC = 'fort_vsc'
-    CONTROLLERS = [
-        PS4,
-        PS5,
-        LOGITECH,
-        XBOX,
-        FORT_VSC,
-    ]
+    PS4 = "ps4"
+    LOGITECH = "logitech"
 
-    CONTROLLER = 'controller'
-    ATTACHMENTS = 'attachments'
-    CAN_ADAPTERS = 'can_adapters'
-    CAN_BRIDGES = 'can_bridges'
-
+    CONTROLLER = "controller"
+    ATTACHMENTS = "attachments"
+    CAN_BRIDGES = "can_bridges"
     # Extras
-    EXTRAS = 'extras'
-
+    EXTRAS = "extras"
     # Generic Robot
-    DESCRIPTION = 'description'
-    LAUNCH = 'launch'
-    CONTROL = 'control'
-
+    DESCRIPTION = "description"
+    LAUNCH = "launch"
+    CONTROL = "control"
     # Battery
-    BATTERY = 'battery'
-
-    # Drivetrain
-    DRIVETRAIN = 'drivetrain'
-
-    # MCU
-    MCU = 'mcu'
-
-    # Wireless
-    WIRELESS = 'wireless'
-
+    BATTERY = "battery"
+    # Wheel
+    WHEEL = "wheel"
     # Enable/disable EKF
     ENABLE_EKF = 'enable_ekf'
-    # Enable/disable Foxglove bridge
-    ENABLE_FOXGLOVE_BRIDGE = 'enable_foxglove_bridge'
-    # Enable/disable Wireless Watcher
-    ENABLE_WIRELESS_WATCHER = 'enable_wireless_watcher'
 
     TEMPLATE = {
         PLATFORM: {
             CONTROLLER: CONTROLLER,
             ATTACHMENTS: ATTACHMENTS,
-            CAN_ADAPTERS: CAN_ADAPTERS,
             CAN_BRIDGES: CAN_BRIDGES,
             EXTRAS: EXTRAS,
             DESCRIPTION: DESCRIPTION,
             LAUNCH: LAUNCH,
             CONTROL: CONTROL,
             BATTERY: BATTERY,
-            DRIVETRAIN: DRIVETRAIN,
-            MCU: MCU,
-            WIRELESS: WIRELESS,
-            ENABLE_EKF: ENABLE_EKF,
-            ENABLE_FOXGLOVE_BRIDGE: ENABLE_FOXGLOVE_BRIDGE,
-            ENABLE_WIRELESS_WATCHER: ENABLE_WIRELESS_WATCHER
+            WHEEL: WHEEL,
+            ENABLE_EKF: ENABLE_EKF
         }
     }
 
@@ -160,19 +126,14 @@ class PlatformConfig(BaseConfig):
         # PLATFORM
         CONTROLLER: PS4,
         ATTACHMENTS: {},
-        CAN_ADAPTERS: {},
         CAN_BRIDGES: {},
         EXTRAS: ExtrasConfig.DEFAULTS,
-        DESCRIPTION: '',
-        LAUNCH: '',
-        CONTROL: '',
+        DESCRIPTION: "",
+        LAUNCH: "",
+        CONTROL: "",
         BATTERY: BatteryConfig.DEFAULTS,
-        DRIVETRAIN: DrivetrainConfig.DEFAULTS,
-        MCU: MCUConfig.DEFAULTS,
-        WIRELESS: WirelessConfig.DEFAULTS,
+        WHEEL: "default",
         ENABLE_EKF: True,
-        ENABLE_FOXGLOVE_BRIDGE: True,
-        ENABLE_WIRELESS_WATCHER: None,
     }
 
     def __init__(
@@ -180,53 +141,33 @@ class PlatformConfig(BaseConfig):
             config: dict = {},
             controller: str = DEFAULTS[CONTROLLER],
             attachments: dict = DEFAULTS[ATTACHMENTS],
-            can_adapters: dict = DEFAULTS[CAN_ADAPTERS],
             can_bridges: dict = DEFAULTS[CAN_BRIDGES],
             battery: dict = DEFAULTS[BATTERY],
             extras: dict = DEFAULTS[EXTRAS],
-            drivetrain: dict = DEFAULTS[DRIVETRAIN],
-            mcu: dict = DEFAULTS[MCU],
-            wireless: dict = DEFAULTS[WIRELESS],
+            wheel: dict = DEFAULTS[WHEEL],
             enable_ekf: bool = DEFAULTS[ENABLE_EKF],
-            enable_foxglove_bridge: bool = DEFAULTS[ENABLE_FOXGLOVE_BRIDGE],
-            enable_wireless_watcher: bool = DEFAULTS[ENABLE_WIRELESS_WATCHER],
             ) -> None:
         # Initialization
         self._config = {}
         self.controller = controller
         self.attachments = attachments
-        self.can_adapters = can_adapters
         self.can_bridges = can_bridges
         self._battery = BatteryConfig(battery)
         self._extras = ExtrasConfig(extras)
         self.description = self.DEFAULTS[self.DESCRIPTION]
         self.launch = self.DEFAULTS[self.LAUNCH]
         self.control = self.DEFAULTS[self.CONTROL]
-        self._drivetrain = DrivetrainConfig(drivetrain)
-        self._mcu = MCUConfig(mcu)
-        self._wireless = WirelessConfig(wireless)
+        self.wheel = wheel
         self.enable_ekf = enable_ekf
-        self.enable_foxglove_bridge = enable_foxglove_bridge
-
-        # Deprecated; this has moved to wireless.enable_wireless_watcher
-        # only set it if the user has the legacy field
-        if enable_wireless_watcher is not None:
-            self.enable_wireless_watcher = enable_wireless_watcher
-
         # Setter Template
         setters = {
             self.KEYS[self.CONTROLLER]: PlatformConfig.controller,
             self.KEYS[self.ATTACHMENTS]: PlatformConfig.attachments,
-            self.KEYS[self.CAN_ADAPTERS]: PlatformConfig.can_adapters,
             self.KEYS[self.CAN_BRIDGES]: PlatformConfig.can_bridges,
             self.KEYS[self.BATTERY]: PlatformConfig.battery,
             self.KEYS[self.EXTRAS]: PlatformConfig.extras,
-            self.KEYS[self.DRIVETRAIN]: PlatformConfig.drivetrain,
-            self.KEYS[self.MCU]: PlatformConfig.mcu,
-            self.KEYS[self.WIRELESS]: PlatformConfig.wireless,
-            self.KEYS[self.ENABLE_EKF]: PlatformConfig.enable_ekf,
-            self.KEYS[self.ENABLE_FOXGLOVE_BRIDGE]: PlatformConfig.enable_foxglove_bridge,
-            self.KEYS[self.ENABLE_WIRELESS_WATCHER]: PlatformConfig.enable_wireless_watcher
+            self.KEYS[self.WHEEL]: PlatformConfig.wheel,
+            self.KEYS[self.ENABLE_EKF]: PlatformConfig.enable_ekf
         }
         super().__init__(setters, config, self.PLATFORM)
 
@@ -259,9 +200,7 @@ class PlatformConfig(BaseConfig):
                 self.template = template
             # Reload battery
             self.battery.update(serial_number=serial_number)
-            self.can_adapters.update(serial_number=serial_number)
             self.can_bridges.update(serial_number=serial_number)
-            self.drivetrain.update(serial_number=serial_number)
 
     @property
     def controller(self) -> str:
@@ -273,8 +212,10 @@ class PlatformConfig(BaseConfig):
 
     @controller.setter
     def controller(self, value: str) -> None:
-        if value.lower() not in self.CONTROLLERS:
-            raise ValueError(f'"{value.lower()}" controller is invalid. Must be one of "{self.CONTROLLERS}"')  # noqa:501
+        assert value.lower() in [self.PS4, self.LOGITECH], (
+            "'%s' controller is invalid. Must be one of: '%s'" % (
+                value.lower(),
+                [self.PS4, self.LOGITECH]))
         self._controller = value.lower()
 
     @property
@@ -291,20 +232,6 @@ class PlatformConfig(BaseConfig):
             self.get_platform_model(), value)
 
     @property
-    def can_adapters(self) -> CANAdapterConfig:
-        self.set_config_param(
-            key=self.KEYS[self.CAN_ADAPTERS],
-            value=self._can_adapters.config
-        )
-        return self._can_adapters
-
-    @can_adapters.setter
-    def can_adapters(self, value: dict) -> None:
-        self._can_adapters = CANAdapterConfig()
-        self._can_adapters.update(True)
-        self._can_adapters.config = value
-
-    @property
     def can_bridges(self) -> CANBridgeConfig:
         self.set_config_param(
             key=self.KEYS[self.CAN_BRIDGES],
@@ -314,9 +241,7 @@ class PlatformConfig(BaseConfig):
 
     @can_bridges.setter
     def can_bridges(self, value: dict) -> None:
-        self._can_bridges = CANBridgeConfig()
-        self._can_bridges.update(True)
-        self._can_bridges.config = value
+        self._can_bridges = CANBridgeConfig(value)
 
     @property
     def extras(self) -> ExtrasConfig:
@@ -333,8 +258,10 @@ class PlatformConfig(BaseConfig):
         elif isinstance(value, ExtrasConfig):
             self._extras = value
         else:
-            if not (isinstance(value, dict) or isinstance(value, ExtrasConfig)):
-                raise TypeError(f'Extras {value} must be of type "dict" or "ExtrasConfig"')
+            assert isinstance(value, dict) or (
+                    isinstance(value, ExtrasConfig)), (
+                "Extras must be of type 'dict' or 'ExtrasConfig'"
+            )
 
     def get_controller(self) -> str:
         return self.controller
@@ -399,57 +326,22 @@ class PlatformConfig(BaseConfig):
         elif isinstance(value, BatteryConfig):
             self._battery = value
         else:
-            if not (isinstance(value, dict) or isinstance(value, BatteryConfig)):
-                raise TypeError(f'Battery configuration {value} must be of type "dict" or "BatteryConfig"')  # noqa:E501
+            assert isinstance(value, dict) or (
+                isinstance(value, BatteryConfig)), (
+                "Battery configuration must be of type 'dict' or 'BatteryConfig'"
+            )
 
     @property
-    def drivetrain(self) -> DrivetrainConfig:
+    def wheel(self) -> str:
         self.set_config_param(
-            key=self.KEYS[self.DRIVETRAIN],
-            value=self._drivetrain.config[self.DRIVETRAIN]
+            key=self.KEYS[self.WHEEL],
+            value=self._wheel
         )
-        return self._drivetrain
+        return self._wheel
 
-    @drivetrain.setter
-    def drivetrain(self, value: dict | DrivetrainConfig) -> None:
-        if isinstance(value, dict):
-            self._drivetrain.config = value
-        elif isinstance(value, DrivetrainConfig):
-            self._drivetrain = value
-        else:
-            if not (isinstance(value, dict) or isinstance(value, DrivetrainConfig)):
-                raise TypeError(f'Drivetrain configuration {value} must be of type "dict" or "DrivetrainConfig"')  # noqa:E501
-
-    @property
-    def mcu(self) -> MCUConfig:
-        self.set_config_param(
-            key=self.KEYS[self.MCU],
-            value=self._mcu.config[self.MCU]
-        )
-        return self._mcu
-
-    @mcu.setter
-    def mcu(self, value: dict | MCUConfig) -> None:
-        if isinstance(value, dict):
-            self._mcu.config = value
-        elif isinstance(value, MCUConfig):
-            self._mcu = value
-        else:
-            if not (isinstance(value, dict) or isinstance(value, MCUConfig)):
-                raise TypeError(f'MCU protocol configuration {value} must be of type "dict" or "MCUConfig"')  # noqa:E501
-
-    @property
-    def wireless(self) -> WirelessConfig:
-        return self._wireless
-
-    @wireless.setter
-    def wireless(self, value: dict | WirelessConfig) -> None:
-        if isinstance(value, dict):
-            self._wireless.config = value
-        elif isinstance(value, WirelessConfig):
-            self._wireless = value
-        else:
-            raise TypeError(f'Wireless configuration must be of type "dict" or "WirelessConfig". Got {value}')  # noqa: E501
+    @wheel.setter
+    def wheel(self, value: str) -> None:
+        self._wheel = value
 
     @property
     def enable_ekf(self) -> bool:
@@ -462,25 +354,3 @@ class PlatformConfig(BaseConfig):
     @enable_ekf.setter
     def enable_ekf(self, value: bool) -> None:
         self._enable_ekf = value
-
-    @property
-    def enable_foxglove_bridge(self) -> bool:
-        self.set_config_param(
-            key=self.KEYS[self.ENABLE_FOXGLOVE_BRIDGE],
-            value=self._enable_foxglove_bridge
-        )
-        return self._enable_foxglove_bridge
-
-    @enable_foxglove_bridge.setter
-    def enable_foxglove_bridge(self, value: bool) -> None:
-        self._enable_foxglove_bridge = value
-
-    @property
-    def enable_wireless_watcher(self) -> bool:
-        return self.wireless.enable_wireless_watcher
-
-    @enable_wireless_watcher.setter
-    def enable_wireless_watcher(self, value: bool) -> None:
-        if value is not None:
-            print('Deprecation notice: platform.enable_wireless_watcher has moved to platform.wireless.enable_wireless_watcher (b)')  # noqa: E501
-            self.wireless.enable_wireless_watcher = value

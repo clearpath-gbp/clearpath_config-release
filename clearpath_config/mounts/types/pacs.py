@@ -25,20 +25,19 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-from typing import List
-
 from clearpath_config.common.types.accessory import Accessory
 from clearpath_config.mounts.types.mount import BaseMount
+from typing import List
 
 
 # PACS
 # - all PACS structures
 class PACS:
-    MAX_ROWS = 20
-    MAX_COLUMNS = 20
+    MAX_ROWS = 8
+    MAX_COLUMNS = 7
 
     class Riser(BaseMount):
-        MOUNT_MODEL = 'riser'
+        MOUNT_MODEL = "riser"
         THICKNESS = 0.00635
 
         def __init__(
@@ -83,45 +82,49 @@ class PACS:
             return self.rows
 
         def set_rows(self, rows: int) -> None:
-            if not isinstance(rows, int):
-                raise TypeError(f'Riser rows {rows} must be of type "int"')
-            if rows <= 0 or rows > PACS.MAX_ROWS:
-                raise ValueError(f'Riser rows {rows} must be between 0 and {PACS.MAX_ROWS}')
+            assert isinstance(rows, int), (
+                "Riser rows must be an integer."
+            )
+            assert 0 < rows <= PACS.MAX_ROWS, (
+                "Riser rows must be between %s and %s" % (
+                    0, PACS.MAX_ROWS
+                )
+            )
             self.rows = rows
 
         def get_columns(self) -> int:
             return self.columns
 
         def set_columns(self, columns: int):
-            if not isinstance(columns, int):
-                raise TypeError(f'Riser columns {columns} must be of type "int"')
-            if columns <= 0 or columns > PACS.MAX_COLUMNS:
-                raise ValueError(
-                    f'Riser columns {columns} must be between 0 and {PACS.MAX_COLUMNS}'
+            assert isinstance(columns, int), (
+                "Riser columns must be an integer."
+            )
+            assert 0 < columns <= PACS.MAX_COLUMNS, (
+                "Riser rows must be between %s and %s" % (
+                    0, PACS.MAX_COLUMNS
                 )
+            )
             self.columns = columns
 
         def get_height(self) -> float:
             return self.height
 
         def set_height(self, height: float) -> None:
-            if height < 0:
-                raise ValueError(f'Height {height} must be at least 0.0')
+            assert height >= 0, "Height must be at least 0"
             self.height = height
 
         def get_thickness(self) -> None:
             return self.thickness
 
         def set_thickness(self, thickness: float) -> None:
-            if thickness <= 0:
-                raise ValueError(f'Thickness {thickness} must be greater than 0.0')
+            assert thickness > 0, "Thickness must be greater than 0"
             self.thickness = thickness
 
     class Bracket(BaseMount):
-        MOUNT_MODEL = 'bracket'
-        HORIZONTAL = 'horizontal'
-        HORIZONTAL_LARGE = 'large'
-        VERTICAL = 'vertical'
+        MOUNT_MODEL = "bracket"
+        HORIZONTAL = "horizontal"
+        HORIZONTAL_LARGE = "large"
+        VERTICAL = "vertical"
         DEFAULT = HORIZONTAL
         MODELS = [HORIZONTAL, HORIZONTAL_LARGE, VERTICAL]
 
@@ -158,8 +161,8 @@ class PACS:
             return self.model
 
         def set_model(self, model: str) -> None:
-            if model not in self.MODELS:
-                raise ValueError(
-                    f'Unexpected Bracket model "{model}". It must be one of "{self.MODELS}"'
-                )
+            assert model in self.MODELS, " ".join([
+                "Unexpected Bracket model '%s'," % model,
+                "it must be one of the following: %s" % self.MODELS
+            ])
             self.model = model

@@ -1,7 +1,7 @@
 serial_number: a200-0000
 version: 0
 system:
-  username: robot
+  username: administrator
   hosts:
     - hostname: cpr-a200-0000
       ip: 192.168.131.1
@@ -12,11 +12,6 @@ system:
       implementation: rmw_fastrtps_cpp
     workspaces: []
 platform:
-  drivetrain:
-    control: diff_4wd
-    wheels:
-      front: outdoor
-      rear: outdoor
   controller: ps4
   battery:
     model: ES20_12C
@@ -35,18 +30,14 @@ platform:
     launch: null
     ros_parameters:
       platform_velocity_controller:
-        linear:
-          x:
-            max_velocity: 1.0
-            min_velocity: -1.0
-            max_acceleration: 3.0
-            min_acceleration: -3.0
-        angular:
-          z:
-            max_velocity: 2.0
-            min_velocity: -2.0
-            max_acceleration: 6.0
-            min_acceleration: -6.0
+        linear.x.max_velocity": 1.0
+        linear.x.min_velocity": -1.0
+        linear.x.max_acceleration": 3.0
+        linear.x.min_acceleration": -3.0
+        angular.z.max_velocity": 2.0
+        angular.z.min_velocity": -2.0
+        angular.z.max_acceleration": 6.0
+        angular.z.min_acceleration": -6.0
 links:
   box: []
   cylinder: []

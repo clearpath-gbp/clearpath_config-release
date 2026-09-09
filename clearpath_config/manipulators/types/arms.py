@@ -26,7 +26,6 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 from typing import List
-
 from clearpath_config.common.types.accessory import Accessory
 from clearpath_config.common.types.ip import IP
 from clearpath_config.common.types.port import Port
@@ -35,16 +34,15 @@ from clearpath_config.manipulators.types.manipulator import BaseManipulator
 
 
 class BaseArm(BaseManipulator):
-    MANIPULATOR_MODEL = 'base'
-    MANIPULATOR_TYPE = 'arm'
+    MANIPULATOR_MODEL = "base"
+    MANIPULATOR_TYPE = "arm"
 
-    IP_ADDRESS = 'ip'
-    IP_PORT = 'port'
-    DEFAULT_IP_ADDRESS = '192.168.131.40'
+    IP_ADDRESS = "ip"
+    IP_PORT = "port"
+    DEFAULT_IP_ADDRESS = "192.168.131.40"
     DEFAULT_IP_PORT = 10000
 
-    URDF_PARAMETERS = {}
-    END_EFFECTOR_LINK = 'end_effector'
+    END_EFFECTOR_LINK = "end_effector"
 
     def __init__(
             self,
@@ -112,7 +110,7 @@ class BaseArm(BaseManipulator):
         self.config = d
         super().from_dict(d)
         if 'gripper' in d:
-            self.gripper = Gripper(self, d['gripper']['model'])
+            self.gripper = Gripper(d['gripper']['model'])
             self.gripper.from_dict(d['gripper'])
             self.gripper.set_name('%s_gripper' % self.get_name())
             if 'parent' not in d['gripper']:
@@ -123,83 +121,29 @@ class BaseArm(BaseManipulator):
             self.port = d[self.IP_PORT]
 
 
-class BaseKinova(BaseArm):
-    MANIPULATOR_MODEL = 'base_kinova'
-    END_EFFECTOR_LINK = 'end_effector_link'
+class KinovaGen3Dof6(BaseArm):
+    MANIPULATOR_MODEL = "kinova_gen3_6dof"
     JOINT_COUNT = 6
-
-    TF_PREFIX = 'tf_prefix'
-    DOF = 'dof'
-    VISION = 'vision'
-    ROBOT_IP = 'robot_ip'
-    USERNAME = 'username'
-    PASSWORD = 'password'
-    PORT = 'port'
-    PORT_REALTIME = 'port_realtime'
-    SESSION_INACTIVITY_TIMEOUT_MS = 'session_inactivity_timeout_ms'
-    CONNECTION_INACTIVITY_TIMEOUT_MS = 'connection_inactivity_timeout_ms'
-    USE_INTERNAL_BUS_GRIPPER_COMM = 'use_internal_bus_gripper_comm'
-    GRIPPER_JOINT_NAME = 'gripper_joint_name'
-    GRIPPER_MAX_VELOCITY = 'gripper_max_velocity'
-    GRIPPER_MAX_FORCE = 'gripper_max_force'
-    USE_FAKE_HARDWARE = 'use_fake_hardware'
-    USE_CONTROLLERS = 'use_controllers'
-    FAKE_SENSOR_COMMANDS = 'fake_sensor_commands'
-    SIM_GAZEBO = 'sim_gazebo'
-    SIM_IGNITION = 'sim_ignition'
-    SIM_ISAAC = 'sim_isaac'
-    USE_EXTERNAL_CABLE = 'use_external_cable'
-    INITIAL_POSITIONS = 'initial_positions'
-
-    # URDF Parameters
-    URDF_PARAMETERS = {
-        TF_PREFIX: '',
-        DOF: '',
-        VISION: '',
-        ROBOT_IP: '',
-        USERNAME: '',
-        PASSWORD: '',
-        PORT: '',
-        PORT_REALTIME: '',
-        SESSION_INACTIVITY_TIMEOUT_MS: '',
-        CONNECTION_INACTIVITY_TIMEOUT_MS: '',
-        USE_INTERNAL_BUS_GRIPPER_COMM: '',
-        GRIPPER_JOINT_NAME: '',
-        GRIPPER_MAX_VELOCITY: '',
-        GRIPPER_MAX_FORCE: '',
-        USE_FAKE_HARDWARE: '',
-        USE_CONTROLLERS: '',
-        FAKE_SENSOR_COMMANDS: '',
-        SIM_GAZEBO: '',
-        SIM_IGNITION: '',
-        SIM_ISAAC: '',
-        USE_EXTERNAL_CABLE: '',
-        INITIAL_POSITIONS: '',
-    }
+    END_EFFECTOR_LINK = "end_effector_link"
 
 
-class KinovaGen3Dof6(BaseKinova):
-    MANIPULATOR_MODEL = 'kinova_gen3_6dof'
-    JOINT_COUNT = 6
-    END_EFFECTOR_LINK = 'end_effector_link'
-
-
-class KinovaGen3Dof7(BaseKinova):
-    MANIPULATOR_MODEL = 'kinova_gen3_7dof'
+class KinovaGen3Dof7(BaseArm):
+    MANIPULATOR_MODEL = "kinova_gen3_7dof"
     JOINT_COUNT = 7
-    END_EFFECTOR_LINK = 'end_effector_link'
+    END_EFFECTOR_LINK = "end_effector_link"
 
 
-class KinovaGen3Lite(BaseKinova):
-    MANIPULATOR_MODEL = 'kinova_gen3_lite'
+class KinovaGen3Lite(BaseArm):
+    MANIPULATOR_MODEL = "kinova_gen3_lite"
     JOINT_COUNT = 6
-    END_EFFECTOR_LINK = 'end_effector_link'
+    END_EFFECTOR_LINK = "end_effector_link"
 
 
 class UniversalRobots(BaseArm):
-    MANIPULATOR_MODEL = 'universal_robots'
+    MANIPULATOR_MODEL = "universal_robots"
     JOINT_COUNT = 6
-    END_EFFECTOR_LINK = 'tool0'
+    END_EFFECTOR_LINK = "tool0"
+
     # Description Variables
     UR_TYPE = 'ur_type'
     INITIAL_POSITIONS = 'initial_positions'
@@ -212,6 +156,7 @@ class UniversalRobots(BaseArm):
     SAFETY_POS_MARGIN = 'safety_pos_margin'
     SAFETY_K_POSITION = 'safety_k_position'
     # Control Parameters
+    GENERATE_ROS2_CONTROL_TAG = 'generate_ros2_control_tag'
     HEADLESS_MODE = 'headless_mode'
     IP_ADDRESS = 'robot_ip'
     SCRIPT_FILENAME = 'script_filename'
@@ -236,8 +181,8 @@ class UniversalRobots(BaseArm):
     TOOL_DEVICE_NAME = 'tool_device_name'
     TOOL_TCP_PORT = 'tool_tcp_port'
     # Simulation Parameters
-    USE_MOCK_HARDWARE = 'use_mock_hardware'
-    MOCK_SENSOR_COMMANDS = 'mock_sensor_commands'
+    USE_FAKE_HARDWARE = 'use_fake_hardware'
+    FAKE_SENSOR_COMMANDS = 'fake_sensor_commands'
     SIM_GAZEBO = 'sim_gazebo'
     SIM_IGNITION = 'sim_ignition'
     # UR Type
@@ -267,6 +212,7 @@ class UniversalRobots(BaseArm):
         SAFETY_LIMITS: '',
         SAFETY_POS_MARGIN: '',
         SAFETY_K_POSITION: '',
+        GENERATE_ROS2_CONTROL_TAG: '',
         HEADLESS_MODE: '',
         IP_ADDRESS: '',
         SCRIPT_FILENAME: '',
@@ -289,8 +235,8 @@ class UniversalRobots(BaseArm):
         TOOL_TX_IDLE_CHARS: '',
         TOOL_DEVICE_NAME: '',
         TOOL_TCP_PORT: '',
-        USE_MOCK_HARDWARE: '',
-        MOCK_SENSOR_COMMANDS: '',
+        USE_FAKE_HARDWARE: '',
+        FAKE_SENSOR_COMMANDS: '',
         SIM_GAZEBO: '',
         SIM_IGNITION: '',
     }
@@ -323,17 +269,13 @@ class UniversalRobots(BaseArm):
 
     @ur_type.setter
     def ur_type(self, value: str) -> None:
-        if value not in self.UR_TYPES:
-            raise ValueError(
-                f'Universal Robot ur_type must be one of {self.UR_TYPES}, got: "{value}"'
-            )
-
+        assert value in self.UR_TYPES, (
+            f'Universal Robot ur_type must be one of {self.UR_TYPES}, got: {value}')
         self._ur_type = value
 
 
 class Franka(BaseArm):
     MANIPULATOR_MODEL = 'franka'
-    JOINT_COUNT = 7
     FER = 'fer'
     FP3 = 'fp3'
     FR3 = 'fr3'
@@ -407,15 +349,8 @@ class Franka(BaseArm):
     def from_dict(self, d: dict) -> None:
         self.config = d
         super().from_dict(d)
-        if 'arm_id' in d:
-            self.arm_id = d['arm_id']
         if 'gripper' in d:
             self.gripper.arm_id = self.arm_id
-
-    def to_dict(self) -> dict:
-        d = super().to_dict()
-        d['arm_id'] = self.arm_id
-        return d
 
     @property
     def arm_id(self) -> str:
@@ -423,8 +358,8 @@ class Franka(BaseArm):
 
     @arm_id.setter
     def arm_id(self, value: str) -> None:
-        if value not in self.ARM_IDS:
-            raise ValueError(f'Franka arm_id must be one of {self.ARM_IDS}, got: {value}')
+        assert value in self.ARM_IDS, (
+            f'Franka arm_id must be one of {self.ARM_IDS}, got: {value}')
         self._arm_id = value
 
     def set_idx(self, idx: int) -> None:
@@ -450,8 +385,12 @@ class Arm():
 
     @classmethod
     def assert_model(cls, model: str) -> None:
-        if model not in cls.MODEL:
-            raise ValueError(f'Arm model "{model}" must be one of "{cls.MODEL.keys()}"')
+        assert model in cls.MODEL, (
+            "Arm model '%s' must be one of: '%s'" % (
+                model,
+                cls.MODEL.keys()
+            )
+        )
 
     def __new__(cls, model: str) -> BaseArm:
         cls.assert_model(model)
