@@ -35,8 +35,8 @@ from clearpath_config.manipulators.types.arms import (
     BaseArm,
 )
 from clearpath_config.manipulators.types.lifts import (
+    BaseLift,
     Lift,
-    BaseLift
 )
 from clearpath_config.manipulators.types.manipulator import BaseManipulator
 
@@ -87,7 +87,8 @@ class MoveItConfig(BaseConfig):
 
     @delay.setter
     def delay(self, value: float) -> None:
-        assert value > 0, f'MoveIt delay must be greater than 0. Got {value}'
+        if value <= 0:
+            raise ValueError(f'MoveIt delay must be greater than 0. Got {value}')
         self._delay = value
 
     @property
@@ -96,19 +97,22 @@ class MoveItConfig(BaseConfig):
 
     @ros_parameters.setter
     def ros_parameters(self, value: dict) -> None:
-        assert isinstance(value, dict), (
-            f'MoveIt ROS parameters must be a dictionary. Got {value} instead.')
+        if not isinstance(value, dict):
+            raise TypeError(f'MoveIt ROS parameters must be a dictionary. Got {value} instead.')
         self._ros_parameters = value
 
     def from_dict(self, d: dict) -> None:
         if self.ENABLE in d:
             self.enable = d[self.ENABLE]
+        if self.DELAY in d:
+            self.delay = d[self.DELAY]
         if self.ROS_PARAMETERS in d:
             self.ros_parameters = d[self.ROS_PARAMETERS]
 
     def to_dict(self) -> dict:
         return {
             self.ENABLE: self.enable,
+            self.DELAY: self.delay,
             self.ROS_PARAMETERS: self.ros_parameters
         }
 
@@ -127,9 +131,9 @@ class ManipulatorListConfig(OrderedListConfig[BaseManipulator]):
 
 class ManipulatorConfig(BaseConfig):
     MOVEIT = 'moveit'
-    MANIPULATORS = "manipulators"
-    ARMS = "arms"
-    LIFTS = "lifts"
+    MANIPULATORS = 'manipulators'
+    ARMS = 'arms'
+    LIFTS = 'lifts'
     TEMPLATE = {
         MANIPULATORS: {
             MOVEIT: MOVEIT,
@@ -170,9 +174,8 @@ class ManipulatorConfig(BaseConfig):
 
     @moveit.setter
     def moveit(self, value: dict) -> None:
-        assert isinstance(value, dict), (
-            f'MoveIt entry under Manipulators must be of type dict. Got {value}'
-        )
+        if not isinstance(value, dict):
+            raise TypeError(f'MoveIt entry under Manipulators must be of type dict. Got {value}')
         self._moveit = MoveItConfig()
         self._moveit.from_dict(value)
 
@@ -186,10 +189,11 @@ class ManipulatorConfig(BaseConfig):
 
     @arms.setter
     def arms(self, value: List[dict]) -> None:
-        assert isinstance(value, list), (
-            "Manipulators must be list of 'dict'")
-        assert all([isinstance(i, dict) for i in value]), (
-            "Manipulators must be list of 'dict'")
+        if not isinstance(value, list):
+            raise TypeError(f'Manipulators must be of type "dict". Got {value}')
+        for i in value:
+            if not isinstance(i, dict):
+                raise TypeError(f'Manipulators must be of type "dict". Got {i}')
         arms_list = []
         for d in value:
             arm = Arm(d['model'])
@@ -207,10 +211,11 @@ class ManipulatorConfig(BaseConfig):
 
     @lifts.setter
     def lifts(self, value: List[dict]) -> None:
-        assert isinstance(value, list), (
-            "Manipulators must be list of 'dict'")
-        assert all([isinstance(i, dict) for i in value]), (
-            "Manipulators must be list of 'dict'")
+        if not isinstance(value, list):
+            raise TypeError(f'Lifts must be list of "dict". Got {value}')
+        for i in value:
+            if not isinstance(i, dict):
+                raise TypeError(f'Lifts must me of type "dict". Got {value}')
         lifts_list = []
         for d in value:
             lift = Lift(d['model'])

@@ -1,5 +1,12 @@
-serial_number: a200-0000
+serial_number: a300-0000
 version: 0
+system:
+  bash:
+    env:
+      SPINNAKER_GENTL64_CTI: /opt/ros/jazzy/lib/spinnaker-gentl/Spinnaker_GenTL.cti
+platform:
+  mcu:
+    protocol: proton
 sensors:
   camera:
     - model: flir_blackfly

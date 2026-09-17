@@ -25,8 +25,10 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-from clearpath_config.common.types.serial_number import SerialNumber
+from typing import Any
+
 from clearpath_config.common.types.namespace import Namespace
+from clearpath_config.common.types.serial_number import SerialNumber
 from clearpath_config.common.utils.dictionary import (
     flatten_dict,
     get_from_dict,
@@ -34,14 +36,13 @@ from clearpath_config.common.utils.dictionary import (
     set_in_dict,
     unflatten_dict
 )
-from typing import Any
 
 
 class BaseConfig:
-    _SERIAL_NUMBER = SerialNumber("generic")
+    _SERIAL_NUMBER = SerialNumber('generic')
     _NAMESPACE = Namespace()
     _VERSION = 0
-    DLIM = "."
+    DLIM = '.'
 
     def __init__(
             self,
@@ -71,15 +72,13 @@ class BaseConfig:
 
     @template.setter
     def template(self, value: dict) -> None:
-        assert isinstance(value, dict), (
-            "template must of type 'dict'"
-        )
+        if not isinstance(value, dict):
+            raise TypeError(f'Template must be of type "dict" not "{type(value)}"')
         # Check that template has all properties
         flat_template = flatten_dict(d=value, dlim=BaseConfig.DLIM)
-        for _, val in flat_template.items():
-            assert isinstance(val, property), (
-                "All entries in template must be properties"
-            )
+        for key, val in flat_template.items():
+            if not isinstance(val, property):
+                raise ValueError(f'Template value at {key} must be a property')
         self._template = value
 
     @property
@@ -94,13 +93,12 @@ class BaseConfig:
     def config(self, value: dict) -> None:
         if value is None:
             return
-        assert isinstance(value, dict), (
-            "config must be of type 'dict'"
-        )
+        if not isinstance(value, dict):
+            raise TypeError(f'Config must be of type "dict", not "{type(value)}"')
         if self._parent_key is not None and self._parent_key not in value:
             value = {self._parent_key: value}
         value = unflatten_dict(value)
-        for map, prop in flatten_dict(
+        for map, prop in flatten_dict(  # noqa:A001
                 d=self.template, dlim=BaseConfig.DLIM).items():
             keys = map.split(BaseConfig.DLIM)
             if is_in_dict(value, keys):
@@ -143,6 +141,5 @@ class BaseConfig:
         elif isinstance(namespace, str):
             BaseConfig._NAMESPACE = Namespace(namespace)
         else:
-            assert isinstance(namespace, str) or isinstance(namespace, Namespace), (
-                "Namespace must be of type 'str' or 'Namespace'"
-            )
+            if not (isinstance(namespace, str) or isinstance(namespace, Namespace)):
+                raise TypeError('Namespace {namespace} must be of type "str" or "Namespace"')

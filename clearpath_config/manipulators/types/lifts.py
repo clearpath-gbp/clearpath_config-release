@@ -26,6 +26,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 from typing import List
+
 from clearpath_config.common.types.accessory import Accessory
 from clearpath_config.manipulators.types.manipulator import BaseManipulator
 
@@ -48,21 +49,6 @@ class BaseLift(BaseManipulator):
             ) -> None:
         super().__init__(
             idx, name, ros_parameters, ros_parameters_template, parent, xyz, rpy)
-        self.urdf_parameters = dict(self.URDF_PARAMETERS)
-
-    def to_dict(self) -> dict:
-        d = super().to_dict()
-        for k, v in self.urdf_parameters.items():
-            if v:
-                d[k] = v
-        return d
-
-    def from_dict(self, d: dict) -> None:
-        self.config = d
-        super().from_dict(d)
-        for k in self.urdf_parameters:
-            if k in d:
-                self.urdf_parameters[k] = d[k]
 
 
 class Ewellix(BaseLift):
@@ -86,8 +72,8 @@ class Ewellix(BaseLift):
 
     URDF_PARAMETERS = {
         EWELLIX_TYPE: '',
-        ADD_PLATE: '',
         ADD_MOUNT: '',
+        ADD_PLATE: '',
         PARAMETERS_FILE: '',
         INITIAL_POSITIONS: '',
         INITIAL_POSITIONS_FILE: '',
@@ -112,8 +98,8 @@ class Lift():
 
     @classmethod
     def assert_model(cls, model: str) -> None:
-        assert model in cls.MODEL, (
-            f'Lift model {model} must be one of {cls.MODEL.keys()}')
+        if model not in cls.MODEL:
+            raise ValueError(f'Lift model {model} must be one of {cls.MODEL.keys()}')
 
     def __new__(cls, model: str) -> BaseLift:
         cls.assert_model(model)

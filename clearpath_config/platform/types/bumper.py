@@ -25,15 +25,16 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
+from typing import List
+
 from clearpath_config.common.types.accessory import Accessory
 from clearpath_config.platform.types.attachment import BaseAttachment
-from typing import List
 
 
 class Bumper(BaseAttachment):
-    ATTACHMENT_MODEL = "bumper"
+    ATTACHMENT_MODEL = 'bumper'
     EXTENSION = 0.0
-    DEFAULT = "default"
+    DEFAULT = 'default'
     MODELS = [DEFAULT]
 
     def __init__(
@@ -73,13 +74,8 @@ class Bumper(BaseAttachment):
     def set_extension(self, extension: float) -> None:
         try:
             extension = float(extension)
-        except ValueError as e:
-            raise AssertionError(e.args[0])
-        assert isinstance(
-            extension, float
-        ), " ".join([
-            "Bumper extension must be of type float,",
-            " unexpected type '%s'" % type(extension)
-        ])
-        assert extension >= 0, "Bumper extension must be a positive value"
+        except ValueError:
+            raise TypeError(f'Bumper extension {extension} must be of type "float"')
+        if extension < 0:
+            raise ValueError(f'Bumper extension {extension} must be a positive value')
         self.extension = extension

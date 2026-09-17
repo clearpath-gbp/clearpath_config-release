@@ -31,11 +31,14 @@ import os
 # File
 # - file class
 class File:
+
     def __init__(self, path: str, creatable=False, exists=False, make_abs=True) -> None:
         if creatable:
-            assert File.is_creatable(path)
+            if not File.is_creatable(path):
+                raise PermissionError(f'File path {path} cannot be created')
         if exists:
-            assert File.is_exists(path)
+            if not File.is_exists(path):
+                raise FileNotFoundError(f'File {path} does not exist')
         self.path = File.clean(path, make_abs)
 
     def __str__(self) -> str:
@@ -52,7 +55,7 @@ class File:
     @staticmethod
     def clean(path: str, make_abs=True) -> str:
         if not path:
-            return ""
+            return ''
         path = os.path.expanduser(path)
         path = os.path.normpath(path)
         if make_abs:

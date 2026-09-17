@@ -25,23 +25,22 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-
 from typing import List
 
 from clearpath_config.common.types.config import BaseConfig
 from clearpath_config.common.types.hostname import Hostname
 from clearpath_config.common.types.ip import IP
-from clearpath_config.common.types.port import Port
 from clearpath_config.common.types.list import ListConfig
+from clearpath_config.common.types.port import Port
 from clearpath_config.common.utils.dictionary import flip_dict
 
 
 class ServerConfig(BaseConfig):
-    HOSTNAME = "hostname"
-    IP_ADDRESS = "ip"
-    PORT = "port"
-    SERVER_ID = "server_id"
-    ENABLED = "enabled"
+    HOSTNAME = 'hostname'
+    IP_ADDRESS = 'ip'
+    PORT = 'port'
+    SERVER_ID = 'server_id'
+    ENABLED = 'enabled'
 
     TEMPLATE = {
         HOSTNAME: HOSTNAME,
@@ -86,7 +85,7 @@ class ServerConfig(BaseConfig):
         super().__init__(setters, config, None)
 
     def __str__(self) -> str:
-        return "{ hostname: %s, ip: %s, port: %s, server_id: %s, enabled: %s}" % (
+        return '{ hostname: %s, ip: %s, port: %s, server_id: %s, enabled: %s}' % (
             str(self.hostname), str(self.ip_address), str(self.port),
             str(self.server_id), str(self.enabled))
 
@@ -101,13 +100,11 @@ class ServerConfig(BaseConfig):
     @server_id.setter
     def server_id(self, value: int) -> None:
         # Check Type
-        assert isinstance(value, int), (
-            f"Remote Server ID {value} is invalid, must be an integer"
-        )
+        if not isinstance(value, int):
+            raise TypeError(f'Remote Server ID {value} is invalid, must be an integer')
         # [0-255] Range
-        assert 0 <= value < 255, (
-            f"Discovery Server ID {value} is invalid, must be in range 0 - 254"
-        )
+        if value < 0 or value > 255:
+            raise ValueError(f'Discovery Server ID {value} is invalid, must be in range 0 - 255')
         self._server_id = value
         return
 
@@ -128,9 +125,10 @@ class ServerConfig(BaseConfig):
         elif isinstance(value, Hostname):
             self._hostname = value
         else:
-            assert isinstance(value, str) or isinstance(value, Hostname), (
-                f"Hostname of {value} is invalid, must be of type 'str' or 'Hostname'"
-            )
+            if not (isinstance(value, str) or isinstance(value, Hostname)):
+                raise TypeError(
+                    f'Hostname of {value} is invalid, must be of type "str" or "Hostname"'
+                )
         return
 
     @property
@@ -150,9 +148,10 @@ class ServerConfig(BaseConfig):
         elif isinstance(value, IP):
             self._ip_address = value
         else:
-            assert isinstance(value, dict) or isinstance(value, IP), (
-                f"IP address of {value} is invalid, must be of type 'str' or 'IP'"
-            )
+            if not (isinstance(value, dict) or isinstance(value, IP)):
+                raise TypeError(
+                    f'IP address of {value} is invalid, must be of type "str" or "IP"'
+                )
         return
 
     @property
@@ -170,9 +169,10 @@ class ServerConfig(BaseConfig):
         elif isinstance(value, Port):
             self._port = value
         else:
-            assert isinstance(value, dict) or isinstance(value, Port), (
-                f"Port of {value} is invalid, must be of type 'str' or 'Port'"
-            )
+            if not (isinstance(value, dict) or isinstance(value, Port)):
+                raise TypeError(
+                    f'Port of {value} is invalid, must be of type "str" or "Port"'
+                )
         return
 
     @property
@@ -186,15 +186,15 @@ class ServerConfig(BaseConfig):
     @enabled.setter
     def enabled(self, value: bool) -> None:
         # Check Type
-        assert (isinstance(value, bool)), (
-            f"Enabled {value} is invalid, must be a boolean"
-        )
+        if not (isinstance(value, bool)):
+            raise TypeError(f'Enabled {value} is invalid, must be a boolean')
         self._enabled = value
         return
 
 
 # LinkListConfig
 class ServerListConfig(ListConfig[ServerConfig, int]):
+
     def __init__(self) -> None:
         super().__init__(
             uid=lambda obj: obj.server_id,

@@ -25,40 +25,41 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
+from math import pi
+from typing import List
+
 from clearpath_config.common.types.accessory import Accessory
 from clearpath_config.common.types.ip import IP
 from clearpath_config.common.types.port import Port
 from clearpath_config.common.utils.dictionary import extend_flat_dict, is_in_dict
 from clearpath_config.sensors.types.sensor import BaseSensor
-from typing import List
-from math import pi
 
 
 class BaseLidar2D(BaseSensor):
-    SENSOR_TYPE = "lidar2d"
-    SENSOR_MODEL = "base"
-    TOPIC = "scan"
+    SENSOR_TYPE = 'lidar2d'
+    SENSOR_MODEL = 'base'
+    TOPIC = 'scan'
 
-    FRAME_ID = "laser"
-    IP_ADDRESS = "192.168.131.20"
+    FRAME_ID = 'laser'
+    IP_ADDRESS = '192.168.131.20'
     IP_PORT = 6000
     MIN_ANGLE = -pi
     MAX_ANGLE = pi
 
     class ROS_PARAMETER_KEYS:
-        FRAME_ID = "node_name.frame_id"
-        IP_ADDRESS = "node_name.ip_address"
-        IP_PORT = "node_name.ip_port"
-        MIN_ANGLE = "node_name.min_angle"
-        MAX_ANGLE = "node_name.max_angle"
+        FRAME_ID = 'node_name.frame_id'
+        IP_ADDRESS = 'node_name.ip_address'
+        IP_PORT = 'node_name.ip_port'
+        MIN_ANGLE = 'node_name.min_angle'
+        MAX_ANGLE = 'node_name.max_angle'
 
     class TOPICS:
-        SCAN = "scan"
+        SCAN = 'scan'
         NAME = {
-            SCAN: "scan",
+            SCAN: 'scan',
         }
-        RATE = {
-            SCAN: 10,
+        TYPE = {
+            SCAN: 'sensor_msgs/msg/LaserScan',
         }
 
     def __init__(
@@ -80,20 +81,15 @@ class BaseLidar2D(BaseSensor):
             rpy: List[float] = Accessory.RPY,
             ) -> None:
         # Frame ID
-        self.frame_id: str = self.FRAME_ID
-        self.set_frame_id(frame_id)
+        self.frame_id = frame_id
         # IP Address
-        self.ip: IP = IP(self.IP_ADDRESS)
-        self.set_ip(ip)
+        self.ip = ip
         # IP Port
-        self.port: Port = Port(self.IP_PORT)
-        self.set_port(port)
+        self.port = port
         # Min Angle
-        self.min_angle: float = float(self.MIN_ANGLE)
-        self.set_min_angle(min_angle)
+        self.min_angle = min_angle
         # Max Angle
-        self.max_angle: float = float(self.MAX_ANGLE)
-        self.set_max_angle(max_angle)
+        self.max_angle = max_angle
         # ROS Parameters Template
         template = {
             self.ROS_PARAMETER_KEYS.FRAME_ID: BaseLidar2D.frame_id,
@@ -116,10 +112,14 @@ class BaseLidar2D(BaseSensor):
             xyz,
             rpy,
             )
+        self.rates = {
+            # TODO: Be able to configure the expected update rate using the robot.yaml
+            BaseLidar2D.TOPICS.SCAN: 40,
+        }
 
     @classmethod
     def get_frame_id_from_idx(cls, idx: int) -> str:
-        return "%s_%s" % (
+        return '%s_%s' % (
             cls.get_name_from_idx(idx),
             cls.FRAME_ID
         )
@@ -135,12 +135,12 @@ class BaseLidar2D(BaseSensor):
         # Set Base: Name and Topic
         super().set_idx(idx)
         # Set Frame ID
-        self.set_frame_id(self.get_frame_id_from_idx(idx))
+        self.frame_id = self.get_frame_id_from_idx(idx)
         # Set IP
         if not is_in_dict(
                 self._ros_parameters,
-                self.ROS_PARAMETER_KEYS.IP_ADDRESS.split(".")):
-            self.set_ip(self.get_ip_from_idx(idx))
+                self.ROS_PARAMETER_KEYS.IP_ADDRESS.split('.')):
+            self.ip = self.get_ip_from_idx(idx)
 
     @property
     def frame_id(self) -> str:
@@ -151,12 +151,6 @@ class BaseLidar2D(BaseSensor):
         Accessory.assert_valid_link(link)
         self._frame_id = link
 
-    def get_frame_id(self) -> str:
-        return self.frame_id
-
-    def set_frame_id(self, link: str) -> None:
-        self.frame_id = link
-
     @property
     def ip(self) -> str:
         return str(self._ip)
@@ -165,12 +159,6 @@ class BaseLidar2D(BaseSensor):
     def ip(self, ip: str) -> None:
         self._ip = IP(str(ip))
 
-    def get_ip(self) -> str:
-        return str(self.ip)
-
-    def set_ip(self, ip: str) -> None:
-        self.ip = ip
-
     @property
     def port(self) -> int:
         return int(self._port)
@@ -178,12 +166,6 @@ class BaseLidar2D(BaseSensor):
     @port.setter
     def port(self, port: int) -> None:
         self._port = Port(int(port))
-
-    def get_port(self) -> int:
-        return int(self.port)
-
-    def set_port(self, port: int) -> None:
-        self.port = port
 
     @property
     def min_angle(self) -> float:
@@ -195,12 +177,6 @@ class BaseLidar2D(BaseSensor):
             angle = self.MIN_ANGLE
         self._min_angle = angle
 
-    def get_min_angle(self) -> float:
-        return self.min_angle
-
-    def set_min_angle(self, angle: float) -> None:
-        self.min_angle = angle
-
     @property
     def max_angle(self) -> float:
         return self._max_angle
@@ -211,36 +187,21 @@ class BaseLidar2D(BaseSensor):
             angle = self.MAX_ANGLE
         self._max_angle = angle
 
-    def get_max_angle(self) -> float:
-        return self.max_angle
-
-    def set_max_angle(self, angle: float) -> None:
-        self.max_angle = angle
-
 
 class HokuyoUST(BaseLidar2D):
-    SENSOR_MODEL = "hokuyo_ust"
+    SENSOR_MODEL = 'hokuyo_ust'
 
-    FRAME_ID = "laser"
+    FRAME_ID = 'laser'
     IP_PORT = 10940
     MIN_ANGLE = -pi
     MAX_ANGLE = pi
 
     class ROS_PARAMETER_KEYS:
-        FRAME_ID = "urg_node.laser_frame_id"
-        IP_ADDRESS = "urg_node.ip_address"
-        IP_PORT = "urg_node.ip_port"
-        MIN_ANGLE = "urg_node.angle_min"
-        MAX_ANGLE = "urg_node.angle_max"
-
-    class TOPICS:
-        SCAN = "scan"
-        NAME = {
-            SCAN: "scan",
-        }
-        RATE = {
-            SCAN: 10,
-        }
+        FRAME_ID = 'urg_node.laser_frame_id'
+        IP_ADDRESS = 'urg_node.ip_address'
+        IP_PORT = 'urg_node.ip_port'
+        MIN_ANGLE = 'urg_node.angle_min'
+        MAX_ANGLE = 'urg_node.angle_max'
 
     def __init__(
             self,
@@ -280,28 +241,19 @@ class HokuyoUST(BaseLidar2D):
 
 
 class SickLMS1XX(BaseLidar2D):
-    SENSOR_MODEL = "sick_lms1xx"
+    SENSOR_MODEL = 'sick_lms1xx'
 
-    FRAME_ID = "laser"
+    FRAME_ID = 'laser'
     IP_PORT = 2111
     MIN_ANGLE = -2.391
     MAX_ANGLE = 2.391
 
     class ROS_PARAMETER_KEYS:
-        FRAME_ID = "lms1xx.frame_id"
-        IP_ADDRESS = "lms1xx.host"
-        IP_PORT = "lms1xx.port"
-        MIN_ANGLE = "lms1xx.min_ang"
-        MAX_ANGLE = "lms1xx.max_ang"
-
-    class TOPICS:
-        SCAN = "scan"
-        NAME = {
-            SCAN: "scan",
-        }
-        RATE = {
-            SCAN: 10,
-        }
+        FRAME_ID = 'lms1xx.frame_id'
+        IP_ADDRESS = 'lms1xx.host'
+        IP_PORT = 'lms1xx.port'
+        MIN_ANGLE = 'lms1xx.min_ang'
+        MAX_ANGLE = 'lms1xx.max_ang'
 
     def __init__(
             self,

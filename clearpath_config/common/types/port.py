@@ -29,6 +29,10 @@
 # Port
 # - TCP Port
 class Port:
+
+    MIN_PORT = 0
+    MAX_PORT = 65535
+
     def __init__(self, port: int) -> None:
         self.assert_valid(port)
         self.port = int(port)
@@ -55,16 +59,16 @@ class Port:
         except Exception:
             return False
         # Must be in Range
-        return 0 <= port < 65536
+        return Port.MIN_PORT <= port <= Port.MAX_PORT
 
     @staticmethod
     def assert_valid(port: int) -> None:
         # Must be an integer
         try:
             port = int(port)
-        except ValueError as e:
-            raise AssertionError(e.args)
+        except ValueError:
+            raise TypeError(f'Port {port} must be an integer')
         # Must be in Range
-        assert 0 <= port < 65536, (
-            "Port '%s' must be between 0 and 65535" % port
-        )
+        if port < Port.MIN_PORT or port > Port.MAX_PORT:
+            raise ValueError(
+                f'Port "{port}" must be in range {Port.MIN_PORT} to {Port.MAX_PORT}')

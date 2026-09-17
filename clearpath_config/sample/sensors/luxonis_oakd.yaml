@@ -1,5 +1,8 @@
-serial_number: a200-0000
+serial_number: a300-0000
 version: 0
+platform:
+  mcu:
+    protocol: proton
 sensors:
   camera:
   - model: luxonis_oakd
@@ -9,12 +12,14 @@ sensors:
     xyz: [0.0, 0.0, 0.0]
     rpy: [0.0, 0.0, 0.0]
     ros_parameters:
-      oakd:
+      luxonis_oakd:
         camera:
           i_enable_imu: false
           i_enable_ir: false
           i_floodlight_brightness: 0
+          i_ip: ''
           i_laser_dot_brightness: 100
+          i_mx_id: ''
           i_nn_type: none
           i_pipeline_type: RGB
           i_usb_speed: SUPER_PLUS
